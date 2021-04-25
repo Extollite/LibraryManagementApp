@@ -14,7 +14,7 @@ public interface BookMapper {
 
     @Mappings({
             @Mapping(target = "genreId", source = "genre.id"),
-            @Mapping(target = "bookRepresentationIds", ignore = true)
+            @Mapping(target = "bookInstanceIds", ignore = true)
     })
     BookDisplayDto map(Book book);
 

@@ -8,9 +8,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDisplayDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
-import pl.rjsk.librarymanagement.model.entity.BookRepresentation;
+import pl.rjsk.librarymanagement.model.entity.BookInstance;
+import pl.rjsk.librarymanagement.repository.BookInstanceRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
-import pl.rjsk.librarymanagement.repository.BookRepresentationRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,13 +27,13 @@ import static org.mockito.Mockito.when;
 class BookServiceTest {
 
     private static final long BOOK_ID = 1L;
-    private static final long BOOK_REPRESENTATION_ID = 1L;
+    private static final long BOOK_INSTANCE_ID = 1L;
 
     @Mock
     private BookRepository bookRepository;
 
     @Mock
-    private BookRepresentationRepository bookRepresentationRepository;
+    private BookInstanceRepository bookInstanceRepository;
 
     @Mock
     private BookMapper bookMapper;
@@ -48,22 +48,22 @@ class BookServiceTest {
         var bookDisplay = new BookDisplayDto();
         bookDisplay.setId(BOOK_ID);
 
-        var bookRepresentation = new BookRepresentation();
-        bookRepresentation.setId(BOOK_REPRESENTATION_ID);
+        var bookInstance = new BookInstance();
+        bookInstance.setId(BOOK_INSTANCE_ID);
 
         when(bookRepository.findAll()).thenReturn(books);
         when(bookMapper.mapAsList(anyCollection())).thenReturn(List.of(bookDisplay));
-        when(bookRepresentationRepository.findAllByBookId(anyLong())).thenReturn(List.of(bookRepresentation));
+        when(bookInstanceRepository.findAllByBookId(anyLong())).thenReturn(List.of(bookInstance));
 
         List<BookDisplayDto> result = bookService.getAllBooksToDisplay();
 
         assertThat(result)
                 .hasSize(1)
-                .extracting("id", "bookRepresentationIds")
-                .containsExactly(tuple(BOOK_ID, List.of(BOOK_REPRESENTATION_ID)));
+                .extracting("id", "bookInstanceIds")
+                .containsExactly(tuple(BOOK_ID, List.of(BOOK_INSTANCE_ID)));
 
         verify(bookRepository).findAll();
         verify(bookMapper).mapAsList(eq(books));
-        verify(bookRepresentationRepository).findAllByBookId(eq(BOOK_ID));
+        verify(bookInstanceRepository).findAllByBookId(eq(BOOK_ID));
     }
 }

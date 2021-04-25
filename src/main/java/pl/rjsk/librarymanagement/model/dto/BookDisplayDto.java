@@ -13,5 +13,5 @@ public class BookDisplayDto {
     private long genreId;
     private int yearOfFirstRelease;
     private String description;
-    private List<Long> bookRepresentationIds;
+    private List<Long> bookInstanceIds;
 }
