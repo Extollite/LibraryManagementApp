@@ -28,9 +28,11 @@ public class Book {
     @Column(nullable = false)
     private String title;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private Author author;
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(joinColumns = {@JoinColumn(name = "book_id")},
+            inverseJoinColumns = {@JoinColumn(name = "author_id")}
+    )
+    private Set<Author> authors;
 
     @ManyToOne
     @JoinColumn(nullable = false)
@@ -39,7 +41,7 @@ public class Book {
     @Column(nullable = false)
     private Integer yearOfFirstRelease;
 
-    @Column(nullable = false, length = 4000)
+    @Column(length = 4000)
     private String description;
 
     @ManyToMany(cascade = {CascadeType.ALL})
