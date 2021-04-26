@@ -9,6 +9,7 @@ import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDisplayDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.model.entity.BookInstance;
+import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookInstanceRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
 
@@ -36,6 +37,9 @@ class BookServiceTest {
     private BookInstanceRepository bookInstanceRepository;
 
     @Mock
+    private BookHistoryRepository bookHistoryRepository;
+
+    @Mock
     private BookMapper bookMapper;
 
     @InjectMocks
@@ -51,19 +55,23 @@ class BookServiceTest {
         var bookInstance = new BookInstance();
         bookInstance.setId(BOOK_INSTANCE_ID);
 
+        List<Long> bookInstanceIds = List.of(BOOK_INSTANCE_ID);
+
         when(bookRepository.findAll()).thenReturn(books);
         when(bookMapper.mapAsList(anyCollection())).thenReturn(List.of(bookDisplay));
         when(bookInstanceRepository.findAllByBookId(anyLong())).thenReturn(List.of(bookInstance));
+        when(bookHistoryRepository.findAllNotAvailable(anyCollection())).thenReturn(Collections.emptyList());
 
         List<BookDisplayDto> result = bookService.getAllBooksToDisplay();
 
         assertThat(result)
                 .hasSize(1)
                 .extracting("id", "bookInstanceIds")
-                .containsExactly(tuple(BOOK_ID, List.of(BOOK_INSTANCE_ID)));
+                .containsExactly(tuple(BOOK_ID, bookInstanceIds));
 
         verify(bookRepository).findAll();
         verify(bookMapper).mapAsList(eq(books));
         verify(bookInstanceRepository).findAllByBookId(eq(BOOK_ID));
+        verify(bookHistoryRepository).findAllNotAvailable(eq(bookInstanceIds));
     }
 }

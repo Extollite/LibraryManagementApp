@@ -9,3 +9,8 @@ values (1, 1);
 insert into book_instances
 (alternative_title, language_code, pages_count, publisher_name, year_of_release, book_id)
 VALUES (null, 'pl-PL', 1000, 'Znak', 2021, 1);
+insert into book_instances
+(alternative_title, language_code, pages_count, publisher_name, year_of_release, book_id)
+VALUES (null, 'pl-PL', 1000, 'Znak', 2021, 1);
+insert into book_history (DUE_DATE, BOOK_INSTANCE_ID, returned_Date)
+values (current_timestamp, 1, null);
