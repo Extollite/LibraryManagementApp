@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDisplayDto;
 import pl.rjsk.librarymanagement.model.entity.BookInstance;
+import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookInstanceRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
 
@@ -18,6 +19,7 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final BookInstanceRepository bookInstanceRepository;
+    private final BookHistoryRepository bookHistoryRepository;
     private final BookMapper bookMapper;
 
     @Transactional
@@ -34,6 +36,9 @@ public class BookService {
                         .stream()
                         .map(BookInstance::getId)
                         .collect(Collectors.toList());
+        List<Long> notAvailableBookInstanceIds = bookHistoryRepository.findAllNotAvailable(bookInstanceIds);
+        bookInstanceIds.removeAll(notAvailableBookInstanceIds);
+
         bookDisplayDto.setBookInstanceIds(bookInstanceIds);
 
         return bookDisplayDto;

@@ -28,4 +28,7 @@ public class BookHistory {
 
     @Column(nullable = false)
     private OffsetDateTime dueDate;
+
+    @Column
+    private OffsetDateTime returnedDate;
 }
