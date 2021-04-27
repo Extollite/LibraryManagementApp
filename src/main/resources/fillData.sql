@@ -1,9 +1,9 @@
 insert into authors (first_name, last_name)
 VALUES ('Kacper', 'Stysinski');
 insert into genres (name)
-values ('history');
+values ('History');
 insert into books (description, title, year_of_first_release, genre_id)
-VALUES ('nice book', 'Fantastic life of Kacper S.', 2021, 1);
+VALUES ('Nice book.', 'Fantastic life of Kacper S.', 2021, 1);
 insert into books_authors (book_id, author_id)
 values (1, 1);
 insert into book_instances
