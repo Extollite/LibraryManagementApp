@@ -10,7 +10,7 @@ import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.model.entity.BookCopy;
-import pl.rjsk.librarymanagement.repository.BookInstanceRepository;
+import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
 
 import java.util.Collections;
@@ -35,7 +35,7 @@ class BookServiceTest {
     private BookRepository bookRepository;
 
     @Mock
-    private BookInstanceRepository bookInstanceRepository;
+    private BookCopyRepository bookCopyRepository;
 
     @Mock
     private BookHistoryRepository bookHistoryRepository;
@@ -60,7 +60,7 @@ class BookServiceTest {
 
         when(bookRepository.findAll()).thenReturn(books);
         when(bookMapper.mapAsList(anyCollection())).thenReturn(List.of(bookDto));
-        when(bookInstanceRepository.findAllByBookId(anyLong())).thenReturn(List.of(bookCopy));
+        when(bookCopyRepository.findAllByBookId(anyLong())).thenReturn(List.of(bookCopy));
         when(bookHistoryRepository.findAllNotAvailable(anyCollection())).thenReturn(Collections.emptyList());
 
         List<BookDto> result = bookService.getAllBooksToDisplay();
@@ -72,7 +72,7 @@ class BookServiceTest {
 
         verify(bookRepository).findAll();
         verify(bookMapper).mapAsList(eq(books));
-        verify(bookInstanceRepository).findAllByBookId(eq(BOOK_ID));
+        verify(bookCopyRepository).findAllByBookId(eq(BOOK_ID));
         verify(bookHistoryRepository).findAllNotAvailable(eq(bookInstanceIds));
     }
 }

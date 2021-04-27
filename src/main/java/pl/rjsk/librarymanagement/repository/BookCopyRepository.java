@@ -7,7 +7,7 @@ import pl.rjsk.librarymanagement.model.entity.BookCopy;
 import java.util.List;
 
 @Repository
-public interface BookInstanceRepository extends JpaRepository<BookCopy, Long> {
+public interface BookCopyRepository extends JpaRepository<BookCopy, Long> {
 
     List<BookCopy> findAllByBookId(long bookId);
 }

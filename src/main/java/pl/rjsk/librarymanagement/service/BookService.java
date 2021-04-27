@@ -7,7 +7,7 @@ import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.entity.BookCopy;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
-import pl.rjsk.librarymanagement.repository.BookInstanceRepository;
+import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
 
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final BookInstanceRepository bookInstanceRepository;
+    private final BookCopyRepository bookCopyRepository;
     private final BookHistoryRepository bookHistoryRepository;
     private final BookMapper bookMapper;
 
@@ -32,7 +32,7 @@ public class BookService {
 
     private BookDto addNumberOfAvailableCopies(BookDto bookDto) {
         List<Long> bookInstanceIds =
-                bookInstanceRepository.findAllByBookId(bookDto.getId())
+                bookCopyRepository.findAllByBookId(bookDto.getId())
                         .stream()
                         .map(BookCopy::getId)
                         .collect(Collectors.toList());
