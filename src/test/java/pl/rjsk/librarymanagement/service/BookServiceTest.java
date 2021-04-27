@@ -10,7 +10,6 @@ import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.model.entity.BookCopy;
->>>>>>> Rename BookInstance to BookCopy. Rename BookDisplayDto to BookDto. Replace list of copies' ids with only a count of them in BookDto.
 import pl.rjsk.librarymanagement.repository.BookInstanceRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
 
@@ -57,13 +56,12 @@ class BookServiceTest {
         var bookCopy = new BookCopy();
         bookCopy.setId(BOOK_COPY_ID);
 
-        List<Long> bookInstanceIds = List.of(BOOK_INSTANCE_ID);
+        List<Long> bookInstanceIds = List.of(BOOK_ID);
 
         when(bookRepository.findAll()).thenReturn(books);
         when(bookMapper.mapAsList(anyCollection())).thenReturn(List.of(bookDto));
         when(bookInstanceRepository.findAllByBookId(anyLong())).thenReturn(List.of(bookCopy));
         when(bookHistoryRepository.findAllNotAvailable(anyCollection())).thenReturn(Collections.emptyList());
-        >>>>>>> Rename BookInstance to BookCopy. Rename BookDisplayDto to BookDto. Replace list of copies' ids with only a count of them in BookDto.
 
         List<BookDto> result = bookService.getAllBooksToDisplay();
 

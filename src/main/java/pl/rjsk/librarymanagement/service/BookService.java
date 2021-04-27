@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
-import pl.rjsk.librarymanagement.model.entity.BookInstance;
+import pl.rjsk.librarymanagement.model.entity.BookCopy;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookInstanceRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
@@ -31,10 +31,16 @@ public class BookService {
     }
 
     private BookDto addNumberOfAvailableCopies(BookDto bookDto) {
-        int numberOfAvailableCopies =
-                bookInstanceRepository.findAllByBookId(bookDto.getId()).size();
-        bookDto.setNumberOfAvailableCopies(numberOfAvailableCopies);
-
+        List<Long> bookInstanceIds =
+                bookInstanceRepository.findAllByBookId(bookDto.getId())
+                        .stream()
+                        .map(BookCopy::getId)
+                        .collect(Collectors.toList());
+        List<Long> notAvailableBookInstanceIds = bookHistoryRepository.findAllNotAvailable(bookInstanceIds);
+        bookInstanceIds.removeAll(notAvailableBookInstanceIds);
+        
+        bookDto.setNumberOfAvailableCopies(bookInstanceIds.size());
+        
         return bookDto;
     }
 }
