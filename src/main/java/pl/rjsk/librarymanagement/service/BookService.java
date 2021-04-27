@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
-import pl.rjsk.librarymanagement.model.dto.BookDisplayDto;
+import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.entity.BookInstance;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookInstanceRepository;
@@ -23,24 +23,18 @@ public class BookService {
     private final BookMapper bookMapper;
 
     @Transactional
-    public List<BookDisplayDto> getAllBooksToDisplay() {
+    public List<BookDto> getAllBooksToDisplay() {
         return bookMapper.mapAsList(bookRepository.findAll())
                 .stream()
-                .map(this::addBookInstanceIds)
+                .map(this::addNumberOfAvailableCopies)
                 .collect(Collectors.toList());
     }
 
-    private BookDisplayDto addBookInstanceIds(BookDisplayDto bookDisplayDto) {
-        List<Long> bookInstanceIds =
-                bookInstanceRepository.findAllByBookId(bookDisplayDto.getId())
-                        .stream()
-                        .map(BookInstance::getId)
-                        .collect(Collectors.toList());
-        List<Long> notAvailableBookInstanceIds = bookHistoryRepository.findAllNotAvailable(bookInstanceIds);
-        bookInstanceIds.removeAll(notAvailableBookInstanceIds);
+    private BookDto addNumberOfAvailableCopies(BookDto bookDto) {
+        int numberOfAvailableCopies =
+                bookInstanceRepository.findAllByBookId(bookDto.getId()).size();
+        bookDto.setNumberOfAvailableCopies(numberOfAvailableCopies);
 
-        bookDisplayDto.setBookInstanceIds(bookInstanceIds);
-
-        return bookDisplayDto;
+        return bookDto;
     }
 }

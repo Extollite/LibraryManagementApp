@@ -2,12 +2,12 @@ package pl.rjsk.librarymanagement.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import pl.rjsk.librarymanagement.model.entity.BookInstance;
+import pl.rjsk.librarymanagement.model.entity.BookCopy;
 
 import java.util.List;
 
 @Repository
-public interface BookInstanceRepository extends JpaRepository<BookInstance, Long> {
+public interface BookInstanceRepository extends JpaRepository<BookCopy, Long> {
 
-    List<BookInstance> findAllByBookId(long bookId);
+    List<BookCopy> findAllByBookId(long bookId);
 }

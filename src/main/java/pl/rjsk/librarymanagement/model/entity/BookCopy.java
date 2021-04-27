@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "book_instances")
 @Data
-public class BookInstance {
+public class BookCopy {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

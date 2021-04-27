@@ -24,7 +24,7 @@ public class BookHistory {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private BookInstance bookInstance;
+    private BookCopy bookCopy;
 
     @Column(nullable = false)
     private OffsetDateTime dueDate;
