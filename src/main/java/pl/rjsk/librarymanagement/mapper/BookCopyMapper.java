@@ -17,6 +17,6 @@ public interface BookCopyMapper {
             @Mapping(target = "dueDate", ignore = true)
     })
     BookCopyDueDateDto map(BookCopy bookCopy);
-    
-    List<BookCopyDueDateDto> mapAsList(Collection<BookCopy>bookCopies);
+
+    List<BookCopyDueDateDto> mapAsList(Collection<BookCopy> bookCopies);
 }
