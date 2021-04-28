@@ -15,7 +15,7 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(name = "user_ratings",
         uniqueConstraints = @UniqueConstraint(columnNames =
-                {"user_id", "book_id" }))
+                {"user_id", "book_id"}))
 @Data
 public class UserRating {
 

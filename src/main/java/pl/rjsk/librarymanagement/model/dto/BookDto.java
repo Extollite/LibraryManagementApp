@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class BookDisplayDto {
+public class BookDto {
 
     private long id;
     private String title;
@@ -13,5 +13,5 @@ public class BookDisplayDto {
     private long genreId;
     private int yearOfFirstRelease;
     private String description;
-    private List<Long> bookInstanceIds;
+    private int numberOfAvailableCopies;
 }

@@ -12,9 +12,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "book_instances")
+@Table(name = "book_copies")
 @Data
-public class BookInstance {
+public class BookCopy {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

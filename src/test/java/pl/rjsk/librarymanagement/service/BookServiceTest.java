@@ -6,11 +6,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
-import pl.rjsk.librarymanagement.model.dto.BookDisplayDto;
+import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
-import pl.rjsk.librarymanagement.model.entity.BookInstance;
+import pl.rjsk.librarymanagement.model.entity.BookCopy;
+import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
-import pl.rjsk.librarymanagement.repository.BookInstanceRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
 
 import java.util.Collections;
@@ -28,13 +28,14 @@ import static org.mockito.Mockito.when;
 class BookServiceTest {
 
     private static final long BOOK_ID = 1L;
-    private static final long BOOK_INSTANCE_ID = 1L;
+    private static final long BOOK_COPY_ID = 1L;
+    private static final int NUM_OF_COPIES = 1;
 
     @Mock
     private BookRepository bookRepository;
 
     @Mock
-    private BookInstanceRepository bookInstanceRepository;
+    private BookCopyRepository bookCopyRepository;
 
     @Mock
     private BookHistoryRepository bookHistoryRepository;
@@ -49,29 +50,29 @@ class BookServiceTest {
     void getAllBooksToDisplay() {
         List<Book> books = Collections.emptyList();
 
-        var bookDisplay = new BookDisplayDto();
-        bookDisplay.setId(BOOK_ID);
+        var bookDto = new BookDto();
+        bookDto.setId(BOOK_ID);
 
-        var bookInstance = new BookInstance();
-        bookInstance.setId(BOOK_INSTANCE_ID);
+        var bookCopy = new BookCopy();
+        bookCopy.setId(BOOK_COPY_ID);
 
-        List<Long> bookInstanceIds = List.of(BOOK_INSTANCE_ID);
+        List<Long> bookInstanceIds = List.of(BOOK_ID);
 
         when(bookRepository.findAll()).thenReturn(books);
-        when(bookMapper.mapAsList(anyCollection())).thenReturn(List.of(bookDisplay));
-        when(bookInstanceRepository.findAllByBookId(anyLong())).thenReturn(List.of(bookInstance));
+        when(bookMapper.mapAsList(anyCollection())).thenReturn(List.of(bookDto));
+        when(bookCopyRepository.findAllByBookId(anyLong())).thenReturn(List.of(bookCopy));
         when(bookHistoryRepository.findAllNotAvailable(anyCollection())).thenReturn(Collections.emptyList());
 
-        List<BookDisplayDto> result = bookService.getAllBooksToDisplay();
+        List<BookDto> result = bookService.getAllBooksToDisplay();
 
         assertThat(result)
                 .hasSize(1)
-                .extracting("id", "bookInstanceIds")
-                .containsExactly(tuple(BOOK_ID, bookInstanceIds));
+                .extracting("id", "numberOfAvailableCopies")
+                .containsExactly(tuple(BOOK_ID, NUM_OF_COPIES));
 
         verify(bookRepository).findAll();
         verify(bookMapper).mapAsList(eq(books));
-        verify(bookInstanceRepository).findAllByBookId(eq(BOOK_ID));
+        verify(bookCopyRepository).findAllByBookId(eq(BOOK_ID));
         verify(bookHistoryRepository).findAllNotAvailable(eq(bookInstanceIds));
     }
 }

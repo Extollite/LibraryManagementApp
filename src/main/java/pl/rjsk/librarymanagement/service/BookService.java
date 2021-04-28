@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
-import pl.rjsk.librarymanagement.model.dto.BookDisplayDto;
-import pl.rjsk.librarymanagement.model.entity.BookInstance;
+import pl.rjsk.librarymanagement.model.dto.BookDto;
+import pl.rjsk.librarymanagement.model.entity.BookCopy;
+import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
-import pl.rjsk.librarymanagement.repository.BookInstanceRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
 
 import java.util.List;
@@ -18,29 +18,29 @@ import java.util.stream.Collectors;
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final BookInstanceRepository bookInstanceRepository;
+    private final BookCopyRepository bookCopyRepository;
     private final BookHistoryRepository bookHistoryRepository;
     private final BookMapper bookMapper;
 
     @Transactional
-    public List<BookDisplayDto> getAllBooksToDisplay() {
+    public List<BookDto> getAllBooksToDisplay() {
         return bookMapper.mapAsList(bookRepository.findAll())
                 .stream()
-                .map(this::addBookInstanceIds)
+                .map(this::addNumberOfAvailableCopies)
                 .collect(Collectors.toList());
     }
 
-    private BookDisplayDto addBookInstanceIds(BookDisplayDto bookDisplayDto) {
+    private BookDto addNumberOfAvailableCopies(BookDto bookDto) {
         List<Long> bookInstanceIds =
-                bookInstanceRepository.findAllByBookId(bookDisplayDto.getId())
+                bookCopyRepository.findAllByBookId(bookDto.getId())
                         .stream()
-                        .map(BookInstance::getId)
+                        .map(BookCopy::getId)
                         .collect(Collectors.toList());
         List<Long> notAvailableBookInstanceIds = bookHistoryRepository.findAllNotAvailable(bookInstanceIds);
         bookInstanceIds.removeAll(notAvailableBookInstanceIds);
 
-        bookDisplayDto.setBookInstanceIds(bookInstanceIds);
+        bookDto.setNumberOfAvailableCopies(bookInstanceIds.size());
 
-        return bookDisplayDto;
+        return bookDto;
     }
 }
