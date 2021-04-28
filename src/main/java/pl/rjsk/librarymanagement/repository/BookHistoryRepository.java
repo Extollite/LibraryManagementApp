@@ -14,12 +14,12 @@ import java.util.Optional;
 public interface BookHistoryRepository extends JpaRepository<BookHistory, Long> {
 
     @Query("select distinct bh.bookCopy.id from BookHistory bh " +
-            "where bh.bookCopy.id in :bookInstanceIds " +
+            "where bh.bookCopy.id in :bookCopyIds " +
             "and bh.returnedDate is null")
-    List<Long> findAllNotAvailable(Collection<Long> bookInstanceIds);
+    List<Long> findAllNotAvailable(Collection<Long> bookCopyIds);
 
     @Query("select bh.dueDate from BookHistory bh " +
-            "where bh.bookCopy.id = :bookInstanceId " +
+            "where bh.bookCopy.id = :bookCopyId " +
             "and bh.returnedDate is null")
-    Optional<OffsetDateTime> findDueDate(Long bookInstanceId);
+    Optional<OffsetDateTime> findDueDate(long bookCopyId);
 }
