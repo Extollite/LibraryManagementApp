@@ -19,6 +19,7 @@ public interface BookHistoryRepository extends JpaRepository<BookHistory, Long> 
     List<Long> findAllNotAvailable(Collection<Long> bookInstanceIds);
 
     @Query("select bh.dueDate from BookHistory bh " +
-            "where bh.bookCopy.id = :bookInstanceId")
+            "where bh.bookCopy.id = :bookInstanceId " +
+            "and bh.returnedDate is null")
     Optional<OffsetDateTime> findDueDate(Long bookInstanceId);
 }

@@ -14,6 +14,7 @@ import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,7 +31,6 @@ public class BookCopyServiceTest {
     private static final long BOOK_ID = 1L;
     private static final long BOOK_COPY_AVAILABLE_ID = 2L;
     private static final long BOOK_COPY_UNAVAILABLE_ID = 3L;
-
 
     @Mock
     private BookCopyRepository bookCopyRepository;
@@ -79,9 +78,9 @@ public class BookCopyServiceTest {
                         tuple(BOOK_COPY_AVAILABLE_ID, BOOK_ID, true),
                         tuple(BOOK_COPY_UNAVAILABLE_ID, BOOK_ID, false));
 
-        verify(bookCopyRepository, times(1)).findAllByBookId(BOOK_ID);
-        verify(bookCopyMapper, times(1)).mapAsList(eq(bookCopies));
-        verify(bookHistoryRepository, times(1)).findDueDate(BOOK_COPY_AVAILABLE_ID);
-        verify(bookHistoryRepository, times(1)).findDueDate(BOOK_COPY_UNAVAILABLE_ID);
+        verify(bookCopyRepository).findAllByBookId(eq(BOOK_ID));
+        verify(bookCopyMapper).mapAsList(eq(bookCopies));
+        verify(bookHistoryRepository).findDueDate(eq(BOOK_COPY_AVAILABLE_ID));
+        verify(bookHistoryRepository).findDueDate(eq(BOOK_COPY_UNAVAILABLE_ID));
     }
 }
