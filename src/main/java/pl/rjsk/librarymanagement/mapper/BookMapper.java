@@ -18,7 +18,7 @@ public interface BookMapper {
     })
     BookDto mapToDto(Book book);
 
-    List<BookDto> mapIterableToDto(Iterable<Book> books);
+    List<BookDto> mapIterableToDtoList(Iterable<Book> books);
 
     @Mappings({
             @Mapping(target = "genreId", source = "genre.id"),
@@ -26,5 +26,5 @@ public interface BookMapper {
     })
     BookWithCopiesDto mapToDtoWithCopies(Book book);
 
-    List<BookWithCopiesDto> mapPageToDtoWithCopies(Iterable<Book> books);
+    List<BookWithCopiesDto> mapIterableToDtoWithCopiesList(Iterable<Book> books);
 }

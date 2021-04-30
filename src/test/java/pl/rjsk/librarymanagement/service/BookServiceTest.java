@@ -67,7 +67,7 @@ class BookServiceTest {
         List<Long> bookCopyIds = List.of(BOOK_ID);
 
         when(bookRepository.findAll()).thenReturn(books);
-        when(bookMapper.mapIterableToDto(anyCollection())).thenReturn(List.of(bookDto));
+        when(bookMapper.mapIterableToDtoList(anyCollection())).thenReturn(List.of(bookDto));
         when(bookCopyRepository.findAllByBookId(anyLong())).thenReturn(List.of(bookCopy));
         when(bookHistoryRepository.findAllNotAvailable(anyCollection())).thenReturn(Collections.emptyList());
 
@@ -79,7 +79,7 @@ class BookServiceTest {
                 .containsExactly(tuple(BOOK_ID, NUM_OF_COPIES));
 
         verify(bookRepository).findAll();
-        verify(bookMapper).mapIterableToDto(eq(books));
+        verify(bookMapper).mapIterableToDtoList(eq(books));
         verify(bookCopyRepository).findAllByBookId(eq(BOOK_ID));
         verify(bookHistoryRepository).findAllNotAvailable(eq(bookCopyIds));
     }
@@ -97,7 +97,7 @@ class BookServiceTest {
         bookCopy.setId(BOOK_COPY_ID);
 
         when(bookRepository.findAll(any(Pageable.class))).thenReturn(bookPage);
-        when(bookMapper.mapPageToDtoWithCopies(any())).thenReturn(List.of(bookWithCopiesDto));
+        when(bookMapper.mapIterableToDtoWithCopiesList(any())).thenReturn(List.of(bookWithCopiesDto));
         when(bookCopyRepository.findAllByBookId(anyLong())).thenReturn(List.of(bookCopy));
 
         Page<BookWithCopiesDto> result = bookService.getAllBooksWithInstances(paging);
@@ -115,7 +115,7 @@ class BookServiceTest {
                 .containsExactly(tuple(BOOK_ID, Set.of(BOOK_COPY_ID)));
 
         verify(bookRepository).findAll(eq(paging));
-        verify(bookMapper).mapPageToDtoWithCopies(eq(bookPage));
+        verify(bookMapper).mapIterableToDtoWithCopiesList(eq(bookPage));
         verify(bookCopyRepository).findAllByBookId(eq(BOOK_ID));
         verifyNoInteractions(bookHistoryRepository);
     }

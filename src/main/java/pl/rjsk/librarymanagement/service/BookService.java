@@ -30,7 +30,7 @@ public class BookService {
 
     @Transactional
     public List<BookDto> getAllBooksToDisplay() {
-        return bookMapper.mapIterableToDto(bookRepository.findAll())
+        return bookMapper.mapIterableToDtoList(bookRepository.findAll())
                 .stream()
                 .map(this::addNumberOfAvailableCopies)
                 .collect(Collectors.toList());
@@ -54,7 +54,7 @@ public class BookService {
     public Page<BookWithCopiesDto> getAllBooksWithInstances(Pageable paging) {
         Page<Book> bookPage = bookRepository.findAll(paging);
 
-        List<BookWithCopiesDto> bookList = bookMapper.mapPageToDtoWithCopies(bookPage)
+        List<BookWithCopiesDto> bookList = bookMapper.mapIterableToDtoWithCopiesList(bookPage)
                 .stream()
                 .map(this::addBookCopies)
                 .collect(Collectors.toList());
