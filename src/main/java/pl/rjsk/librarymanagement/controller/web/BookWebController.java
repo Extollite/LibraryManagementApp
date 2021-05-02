@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
 import pl.rjsk.librarymanagement.service.BookService;
@@ -16,14 +17,19 @@ import java.util.stream.IntStream;
 
 @Controller
 @RequiredArgsConstructor
-public class BookController {
+public class BookWebController {
 
     private final BookService bookService;
 
+    @ModelAttribute("module")
+    private String module() {
+        return "books";
+    }
+
     @GetMapping("/books")
-    public String litBooks(Model model,
-                           @RequestParam("page") int page,
-                           @RequestParam("size") int size) {
+    public String listBooks(Model model,
+                            @RequestParam("page") int page,
+                            @RequestParam("size") int size) {
         Page<BookWithCopiesDto> books = bookService.getAllBooksWithInstances(PageRequest.of(page - 1, size));
 
         model.addAttribute("books", books.getContent());
