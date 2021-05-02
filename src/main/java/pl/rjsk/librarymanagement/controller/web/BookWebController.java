@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
 import pl.rjsk.librarymanagement.service.BookService;
@@ -17,6 +18,7 @@ import java.util.stream.IntStream;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/books")
 public class BookWebController {
 
     private final BookService bookService;
@@ -26,7 +28,7 @@ public class BookWebController {
         return "books";
     }
 
-    @GetMapping("/books")
+    @GetMapping
     public String listBooks(Model model,
                             @RequestParam("page") int page,
                             @RequestParam("size") int size) {
