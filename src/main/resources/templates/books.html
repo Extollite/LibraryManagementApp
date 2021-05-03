@@ -39,9 +39,11 @@
             <tbody th:each="book : ${books}">
                 <tr>
                     <td th:text="${book.title}"></td>
-                    <td th:each="author : ${book.authors}">
-                        <span th:text="${author.firstName}"></span>
-                        <span th:text="${author.lastName}"></span>
+                    <td>
+                        <th:block th:each="author, iter : ${book.authors}">
+                            <span th:text="${author.firstName}"></span>
+                            <span th:text="${iter.last} ? ${author.lastName} : ${author.lastName} + ','"></span>
+                        </th:block>
                     </td>
                     <td th:text="${book.yearOfFirstRelease}"></td>
                     <td th:text="${book.bookCopyIds.size()}"></td>

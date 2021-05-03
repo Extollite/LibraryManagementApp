@@ -1,6 +1,7 @@
 package pl.rjsk.librarymanagement.model.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Column;
@@ -14,6 +15,7 @@ import javax.persistence.Table;
 @Table(name = "genres")
 @Data
 @Immutable
+@NoArgsConstructor
 public class Genre {
 
     @Id
@@ -23,4 +25,8 @@ public class Genre {
 
     @Column(nullable = false, updatable = false, unique = true)
     private String name;
+    
+    public Genre(long id) {
+        this.id = id;
+    }
 }

@@ -6,5 +6,5 @@ import pl.rjsk.librarymanagement.model.entity.Book;
 
 @Repository
 public interface BookRepository extends PagingAndSortingRepository<Book, Long> {
-
+    
 }

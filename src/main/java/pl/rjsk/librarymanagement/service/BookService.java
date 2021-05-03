@@ -1,6 +1,7 @@
 package pl.rjsk.librarymanagement.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -13,15 +14,19 @@ import pl.rjsk.librarymanagement.model.dto.BookWithKeywordsDto;
 import pl.rjsk.librarymanagement.model.entity.Author;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.model.entity.BookCopy;
+import pl.rjsk.librarymanagement.model.entity.Genre;
 import pl.rjsk.librarymanagement.model.entity.Keyword;
 import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
+import pl.rjsk.librarymanagement.repository.KeywordRepository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookService {
@@ -29,8 +34,29 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookCopyRepository bookCopyRepository;
     private final BookHistoryRepository bookHistoryRepository;
+    private final KeywordRepository keywordRepository;
     private final BookMapper bookMapper;
+    
+    @Transactional
+    public void updateBook(BookWithKeywordsDto bookDto) {
+        log.info(bookDto.toString());
+        var fetchedBook = bookRepository.findById(bookDto.getId());
+        if(fetchedBook.isEmpty()) {
+            throw new IllegalArgumentException("Unable to fetch book with given id: " + bookDto.getId());
+        }
+        
+        Book bookToUpdate = fetchedBook.get();
 
+        bookToUpdate.setTitle(bookDto.getTitle());
+        bookToUpdate.setAuthors(bookDto.getAuthorsIds().stream().map(Author::new).collect(Collectors.toSet()));
+        bookToUpdate.setGenre(new Genre(bookDto.getGenreId()));
+        bookToUpdate.setYearOfFirstRelease(bookDto.getYearOfFirstRelease());
+        bookToUpdate.setDescription(bookDto.getDescription());
+        bookToUpdate.setKeywords(
+                Arrays.stream(bookDto.getKeywords().split(" ")).map(Keyword::new).collect(Collectors.toSet()));
+    }
+    
+    @Transactional
     public BookWithKeywordsDto getBookWithKeywordsById(long id) {
         var book = bookRepository.findById(id);
         if(book.isEmpty()) {
@@ -38,7 +64,7 @@ public class BookService {
         }
         BookWithKeywordsDto bookDto = bookMapper.mapToDtoWithKeywords(book.get());
         
-        String keywords = book.get().getKeywords().stream().map(Keyword::getName).collect(Collectors.joining(" "));
+        String keywords = book.get().getKeywords().stream().map(Keyword::getName).collect(Collectors.joining(", "));
         Set<Long> authorIds = book.get().getAuthors().stream().map(Author::getId).collect(Collectors.toSet());
         
         bookDto.setKeywords(keywords);

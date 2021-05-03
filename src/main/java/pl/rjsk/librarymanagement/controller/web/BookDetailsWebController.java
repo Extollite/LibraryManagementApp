@@ -1,6 +1,7 @@
 package pl.rjsk.librarymanagement.controller.web;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +22,12 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/books/details")
+@Slf4j
 public class BookDetailsWebController {
 
     private final BookService bookService;
     private final GenreService genreService;
     private final AuthorService authorService;
-    private final BookMapper bookMapper;
 
     @ModelAttribute("module")
     private String module() {
@@ -48,13 +49,15 @@ public class BookDetailsWebController {
         model.addAttribute("book", bookDto);
         model.addAttribute("genres", genres);
         model.addAttribute("authors", authors);
+        
+        log.info(bookDto.toString());
 
         return "edit";
     }
 
     @PostMapping("edit/save")
     public String editDetails(@ModelAttribute(value="book") BookWithKeywordsDto bookDto) {
-        // TODO: save logic
-        return "redirect:/books/details?id="+bookDto.getId();
+        bookService.updateBook(bookDto);
+        return "redirect:/books/details?id=" + bookDto.getId();
     }
 }
