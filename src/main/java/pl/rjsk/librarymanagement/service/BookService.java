@@ -19,7 +19,6 @@ import pl.rjsk.librarymanagement.model.entity.Keyword;
 import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
-import pl.rjsk.librarymanagement.repository.KeywordRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,17 +33,16 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookCopyRepository bookCopyRepository;
     private final BookHistoryRepository bookHistoryRepository;
-    private final KeywordRepository keywordRepository;
     private final BookMapper bookMapper;
-    
+
     @Transactional
     public void updateBook(BookWithKeywordsDto bookDto) {
         log.info(bookDto.toString());
         var fetchedBook = bookRepository.findById(bookDto.getId());
-        if(fetchedBook.isEmpty()) {
+        if (fetchedBook.isEmpty()) {
             throw new IllegalArgumentException("Unable to fetch book with given id: " + bookDto.getId());
         }
-        
+
         Book bookToUpdate = fetchedBook.get();
 
         bookToUpdate.setTitle(bookDto.getTitle());
@@ -55,25 +53,25 @@ public class BookService {
         bookToUpdate.setKeywords(
                 Arrays.stream(bookDto.getKeywords().split(" ")).map(Keyword::new).collect(Collectors.toSet()));
     }
-    
+
     @Transactional
     public BookWithKeywordsDto getBookWithKeywordsById(long id) {
         var book = bookRepository.findById(id);
-        if(book.isEmpty()) {
+        if (book.isEmpty()) {
             throw new IllegalArgumentException("Unable to fetch book with given id: " + id);
         }
         BookWithKeywordsDto bookDto = bookMapper.mapToDtoWithKeywords(book.get());
-        
+
         String keywords = book.get().getKeywords().stream().map(Keyword::getName).collect(Collectors.joining(", "));
         Set<Long> authorIds = book.get().getAuthors().stream().map(Author::getId).collect(Collectors.toSet());
-        
+
         bookDto.setKeywords(keywords);
         bookDto.setAuthorsIds(authorIds);
-        
+
         return bookDto;
     }
-    
-    
+
+
     @Transactional
     public List<BookDto> getAllBooksToDisplay() {
         return bookMapper.mapIterableToDtoList(bookRepository.findAll())

@@ -25,7 +25,7 @@ public class Keyword {
 
     @Column(nullable = false, updatable = false, unique = true)
     private String name;
-    
+
     public Keyword(String name) {
         this.name = name;
     }

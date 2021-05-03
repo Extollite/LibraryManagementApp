@@ -25,7 +25,7 @@ public class Genre {
 
     @Column(nullable = false, updatable = false, unique = true)
     private String name;
-    
+
     public Genre(long id) {
         this.id = id;
     }

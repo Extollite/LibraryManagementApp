@@ -26,7 +26,7 @@ public class Author {
 
     @Column(nullable = false)
     private String lastName;
-    
+
     public Author(long id) {
         this.id = id;
     }
