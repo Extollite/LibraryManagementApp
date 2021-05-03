@@ -27,7 +27,7 @@
             <div class="form-group">
                 <label for="authorInput">Author</label>
                 <select id="authorInput" class="form-control selectpicker show-tick"
-                        th:field="*{authors}" data-live-search="true" multiple required>
+                        th:field="*{authorsIds}" data-live-search="true" multiple required>
                     <option th:each="author : ${authors}"
                             th:value="${author.id}" th:text="${author.firstName + ' ' + author.lastName}"
                             th:attr="data-tokens=${author.firstName.toLowerCase()+author.lastName.toLowerCase()}">

@@ -5,6 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
+import pl.rjsk.librarymanagement.model.dto.BookWithKeywordsDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
 
 import java.util.List;
@@ -27,4 +28,11 @@ public interface BookMapper {
     BookWithCopiesDto mapToDtoWithCopies(Book book);
 
     List<BookWithCopiesDto> mapIterableToDtoWithCopiesList(Iterable<Book> books);
+    
+    @Mappings({
+            @Mapping(target = "genreId", source = "genre.id"),
+            @Mapping(target = "authorsIds", ignore = true),
+            @Mapping(target = "keywords", ignore = true)
+    })
+    BookWithKeywordsDto mapToDtoWithKeywords(Book book);
 }

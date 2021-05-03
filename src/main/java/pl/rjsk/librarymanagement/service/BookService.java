@@ -9,8 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
+import pl.rjsk.librarymanagement.model.dto.BookWithKeywordsDto;
+import pl.rjsk.librarymanagement.model.entity.Author;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.model.entity.BookCopy;
+import pl.rjsk.librarymanagement.model.entity.Keyword;
 import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
@@ -28,6 +31,23 @@ public class BookService {
     private final BookHistoryRepository bookHistoryRepository;
     private final BookMapper bookMapper;
 
+    public BookWithKeywordsDto getBookWithKeywordsById(long id) {
+        var book = bookRepository.findById(id);
+        if(book.isEmpty()) {
+            throw new IllegalArgumentException("Unable to fetch book with given id: " + id);
+        }
+        BookWithKeywordsDto bookDto = bookMapper.mapToDtoWithKeywords(book.get());
+        
+        String keywords = book.get().getKeywords().stream().map(Keyword::getName).collect(Collectors.joining(" "));
+        Set<Long> authorIds = book.get().getAuthors().stream().map(Author::getId).collect(Collectors.toSet());
+        
+        bookDto.setKeywords(keywords);
+        bookDto.setAuthorsIds(authorIds);
+        
+        return bookDto;
+    }
+    
+    
     @Transactional
     public List<BookDto> getAllBooksToDisplay() {
         return bookMapper.mapIterableToDtoList(bookRepository.findAll())

@@ -14,7 +14,6 @@ import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
