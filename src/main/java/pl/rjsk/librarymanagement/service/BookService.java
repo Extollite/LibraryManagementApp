@@ -50,8 +50,8 @@ public class BookService {
         bookToUpdate.setGenre(new Genre(bookDto.getGenreId()));
         bookToUpdate.setYearOfFirstRelease(bookDto.getYearOfFirstRelease());
         bookToUpdate.setDescription(bookDto.getDescription());
-        bookToUpdate.setKeywords(
-                Arrays.stream(bookDto.getKeywords().split(" ")).map(Keyword::new).collect(Collectors.toSet()));
+        bookToUpdate.setKeywords(Arrays.stream(
+                bookDto.getKeywords().split("\\s*,\\s*")).map(Keyword::new).collect(Collectors.toSet()));
     }
 
     @Transactional
