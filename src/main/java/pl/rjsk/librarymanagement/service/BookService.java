@@ -41,13 +41,16 @@ public class BookService {
         var bookToUpdate = bookRepository.findById(bookDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + bookDto.getId()));
 
+        Set<Keyword> parsedKeywords = Arrays.stream(bookDto.getKeywords().split("\\s*,\\s*"))
+                        .map(Keyword::new)
+                        .collect(Collectors.toSet());
+        
         bookToUpdate.setTitle(bookDto.getTitle());
         bookToUpdate.setAuthors(bookDto.getAuthorsIds().stream().map(Author::new).collect(Collectors.toSet()));
         bookToUpdate.setGenre(new Genre(bookDto.getGenreId()));
         bookToUpdate.setYearOfFirstRelease(bookDto.getYearOfFirstRelease());
         bookToUpdate.setDescription(bookDto.getDescription());
-        bookToUpdate.setKeywords(Arrays.stream(
-                bookDto.getKeywords().split("\\s*,\\s*")).map(Keyword::new).collect(Collectors.toSet()));
+        bookToUpdate.setKeywords(parsedKeywords);
     }
 
     @Transactional
@@ -56,18 +59,8 @@ public class BookService {
         if (book.isEmpty()) {
             throw new IllegalArgumentException("Unable to fetch book with given id: " + id);
         }
-        BookWithKeywordsDto bookDto = bookMapper.mapToDtoWithKeywords(book.get());
-
-        String keywords = book.get().getKeywords()
-                .stream()
-                .map(Keyword::getName)
-                .collect(Collectors.joining(", "));
-        Set<Long> authorIds = book.get().getAuthors().stream().map(Author::getId).collect(Collectors.toSet());
-
-        bookDto.setKeywords(keywords);
-        bookDto.setAuthorsIds(authorIds);
-
-        return bookDto;
+        
+        return bookMapper.mapToDtoWithKeywords(book.get());
     }
 
     @Transactional
