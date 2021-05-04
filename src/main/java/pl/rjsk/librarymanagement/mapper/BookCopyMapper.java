@@ -11,6 +11,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface BookCopyMapper {
+
     @Mappings({
             @Mapping(target = "bookId", source = "id"),
             @Mapping(target = "available", ignore = true),

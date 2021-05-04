@@ -13,12 +13,19 @@ import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithKeywordsDto;
-import pl.rjsk.librarymanagement.model.entity.*;
+import pl.rjsk.librarymanagement.model.entity.Author;
+import pl.rjsk.librarymanagement.model.entity.Book;
+import pl.rjsk.librarymanagement.model.entity.BookCopy;
+import pl.rjsk.librarymanagement.model.entity.Keyword;
 import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -55,15 +62,16 @@ class BookServiceTest {
     @Test
     void getBookWithKeywordsById() {
         var authors = Set.of(
-            new Author(1),
-            new Author(2));
+                new Author(1),
+                new Author(2));
         var authorsIds = Set.of(1L, 2L);
 
-        var keywords = Set.of(
-                new Keyword("history"),
-                new Keyword("war"));
-        String allKeywordsA = "history, war";
-        String allKeywordsB = "war, history";
+        Set<Keyword> keywords = new LinkedHashSet<>();
+        keywords.add(new Keyword("history"));
+        keywords.add(new Keyword("war"));
+        keywords.add(new Keyword("poland"));
+
+        String allKeywords = "history, war, poland";
 
         Book book = new Book();
         book.setId(BOOK_ID);
@@ -80,8 +88,7 @@ class BookServiceTest {
 
         assertThat(result)
                 .extracting("id", "authorsIds", "keywords")
-                .contains(BOOK_ID, authorsIds)
-                .containsAnyElementsOf(List.of(allKeywordsA, allKeywordsB));
+                .containsExactly(BOOK_ID, authorsIds, allKeywords);
 
         verify(bookRepository).findById(eq(BOOK_ID));
         verify(bookMapper).mapToDtoWithKeywords(eq(book));

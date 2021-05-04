@@ -38,12 +38,8 @@ public class BookService {
     @Transactional
     public void updateBook(BookWithKeywordsDto bookDto) {
         log.info(bookDto.toString());
-        var fetchedBook = bookRepository.findById(bookDto.getId());
-        if (fetchedBook.isEmpty()) {
-            throw new IllegalArgumentException("Unable to fetch book with given id: " + bookDto.getId());
-        }
-
-        Book bookToUpdate = fetchedBook.get();
+        var bookToUpdate = bookRepository.findById(bookDto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + bookDto.getId()));
 
         bookToUpdate.setTitle(bookDto.getTitle());
         bookToUpdate.setAuthors(bookDto.getAuthorsIds().stream().map(Author::new).collect(Collectors.toSet()));
@@ -62,7 +58,10 @@ public class BookService {
         }
         BookWithKeywordsDto bookDto = bookMapper.mapToDtoWithKeywords(book.get());
 
-        String keywords = book.get().getKeywords().stream().map(Keyword::getName).collect(Collectors.joining(", "));
+        String keywords = book.get().getKeywords()
+                .stream()
+                .map(Keyword::getName)
+                .collect(Collectors.joining(", "));
         Set<Long> authorIds = book.get().getAuthors().stream().map(Author::getId).collect(Collectors.toSet());
 
         bookDto.setKeywords(keywords);
@@ -70,7 +69,6 @@ public class BookService {
 
         return bookDto;
     }
-
 
     @Transactional
     public List<BookDto> getAllBooksToDisplay() {

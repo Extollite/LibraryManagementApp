@@ -12,6 +12,7 @@ import java.util.TimeZone;
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @PropertySource("classpath:META-INF/build-info.properties")
 public class LibraryManagementApplication {
+
     public static void main(String[] args) {
         SpringApplication.run(LibraryManagementApplication.class, args);
     }

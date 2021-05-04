@@ -1,12 +1,12 @@
 package pl.rjsk.librarymanagement.model.dto;
 
-
 import lombok.Data;
 
 import java.time.OffsetDateTime;
 
 @Data
 public class BookCopyDueDateDto {
+
     private long id;
     private String alternativeTitle;
     private long bookId;

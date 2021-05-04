@@ -23,7 +23,8 @@
             </div>
             <div class="form-group">
                 <label for="yearOfReleaseInput">Year of release</label>
-                <input class="form-control" id="yearOfReleaseInput" name="yearOfFirstRelease" placeholder="Put year of release..."
+                <input class="form-control" id="yearOfReleaseInput" name="yearOfFirstRelease"
+                       placeholder="Put year of release..."
                        required th:value="*{yearOfFirstRelease}" type="text">
             </div>
             <div class="form-group">
@@ -40,7 +41,8 @@
                 <label for="genreInput">Genre</label>
                 <select class="form-control selectpicker show-tick" data-live-search="true"
                         id="genreInput" required th:field="*{genreId}">
-                    <option th:attr="data-tokens=${genre.name.toLowerCase()}" th:each="genre : ${genres}" th:text="${genre.name}"
+                    <option th:attr="data-tokens=${genre.name.toLowerCase()}" th:each="genre : ${genres}"
+                            th:text="${genre.name}"
                             th:value="${genre.id}">
                     </option>
                 </select>
