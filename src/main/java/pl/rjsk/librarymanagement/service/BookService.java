@@ -44,9 +44,10 @@ public class BookService {
         Set<Keyword> parsedKeywords = Arrays.stream(bookDto.getKeywords().split("\\s*,\\s*"))
                         .map(Keyword::new)
                         .collect(Collectors.toSet());
+        Set<Author> authors = bookDto.getAuthorsIds().stream().map(Author::new).collect(Collectors.toSet());
         
         bookToUpdate.setTitle(bookDto.getTitle());
-        bookToUpdate.setAuthors(bookDto.getAuthorsIds().stream().map(Author::new).collect(Collectors.toSet()));
+        bookToUpdate.setAuthors(authors);
         bookToUpdate.setGenre(new Genre(bookDto.getGenreId()));
         bookToUpdate.setYearOfFirstRelease(bookDto.getYearOfFirstRelease());
         bookToUpdate.setDescription(bookDto.getDescription());
@@ -55,12 +56,10 @@ public class BookService {
 
     @Transactional
     public BookWithKeywordsDto getBookWithKeywordsById(long id) {
-        var book = bookRepository.findById(id);
-        if (book.isEmpty()) {
-            throw new IllegalArgumentException("Unable to fetch book with given id: " + id);
-        }
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + id));
         
-        return bookMapper.mapToDtoWithKeywords(book.get());
+        return bookMapper.mapToDtoWithKeywords(book);
     }
 
     @Transactional
