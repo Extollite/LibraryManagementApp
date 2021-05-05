@@ -13,22 +13,21 @@ import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithKeywordsDto;
-import pl.rjsk.librarymanagement.model.entity.Author;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.model.entity.BookCopy;
-import pl.rjsk.librarymanagement.model.entity.Keyword;
 import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
 
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -61,22 +60,8 @@ class BookServiceTest {
 
     @Test
     void getBookWithKeywordsById() {
-        var authors = Set.of(
-                new Author(1),
-                new Author(2));
-        var authorsIds = Set.of(1L, 2L);
-
-        Set<Keyword> keywords = new LinkedHashSet<>();
-        keywords.add(new Keyword("history"));
-        keywords.add(new Keyword("war"));
-        keywords.add(new Keyword("poland"));
-
-        String allKeywords = "history, war, poland";
-
         Book book = new Book();
         book.setId(BOOK_ID);
-        book.setKeywords(keywords);
-        book.setAuthors(authors);
 
         BookWithKeywordsDto bookDto = new BookWithKeywordsDto();
         bookDto.setId(BOOK_ID);
@@ -86,12 +71,21 @@ class BookServiceTest {
 
         var result = bookService.getBookWithKeywordsById(BOOK_ID);
 
-        assertThat(result)
-                .extracting("id", "authorsIds", "keywords")
-                .containsExactly(BOOK_ID, authorsIds, allKeywords);
+        assertThat(result.getId()).isEqualTo(BOOK_ID);
 
         verify(bookRepository).findById(eq(BOOK_ID));
         verify(bookMapper).mapToDtoWithKeywords(eq(book));
+    }
+    
+    @Test
+    void getBookWithKeywordsById_InvalidId() {
+        String expectedMessage = "Unable to fetch book with given id: " + BOOK_ID;
+        
+        when(bookRepository.findById(BOOK_ID)).thenReturn(Optional.empty());
+        
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> bookService.getBookWithKeywordsById(BOOK_ID));
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
