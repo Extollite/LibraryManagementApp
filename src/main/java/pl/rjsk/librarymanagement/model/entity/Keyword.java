@@ -1,6 +1,7 @@
 package pl.rjsk.librarymanagement.model.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Column;
@@ -14,6 +15,7 @@ import javax.persistence.Table;
 @Table(name = "keywords")
 @Data
 @Immutable
+@NoArgsConstructor
 public class Keyword {
 
     @Id
@@ -23,4 +25,8 @@ public class Keyword {
 
     @Column(nullable = false, updatable = false, unique = true)
     private String name;
+
+    public Keyword(String name) {
+        this.name = name;
+    }
 }

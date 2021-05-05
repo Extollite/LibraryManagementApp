@@ -30,8 +30,8 @@ public class BookWebController {
 
     @GetMapping
     public String listBooks(Model model,
-                            @RequestParam("page") int page,
-                            @RequestParam("size") int size) {
+                            @RequestParam(value = "page", defaultValue = "1") int page,
+                            @RequestParam(value = "size", defaultValue = "10") int size) {
         Page<BookWithCopiesDto> books = bookService.getAllBooksWithInstances(PageRequest.of(page - 1, size));
 
         model.addAttribute("books", books.getContent());

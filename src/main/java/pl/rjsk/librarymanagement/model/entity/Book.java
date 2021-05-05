@@ -28,7 +28,7 @@ public class Book {
     @Column(nullable = false)
     private String title;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(joinColumns = {@JoinColumn(name = "book_id")},
             inverseJoinColumns = {@JoinColumn(name = "author_id")}
     )
