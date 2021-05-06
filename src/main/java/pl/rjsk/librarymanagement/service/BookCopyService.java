@@ -2,9 +2,9 @@ package pl.rjsk.librarymanagement.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rjsk.librarymanagement.mapper.BookCopyMapper;
 import pl.rjsk.librarymanagement.model.dto.BookCopyDueDateDto;
-import pl.rjsk.librarymanagement.model.entity.BookCopy;
 import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 
@@ -18,8 +18,10 @@ public class BookCopyService {
     private final BookCopyRepository bookCopyRepository;
     private final BookHistoryRepository bookHistoryRepository;
     private final BookCopyMapper bookCopyMapper;
-    
+
+    @Transactional
     public void deleteBookCopy(long copyId) {
+        bookHistoryRepository.deleteAllByBookCopyId(copyId);
         bookCopyRepository.deleteById(copyId);
     }
 

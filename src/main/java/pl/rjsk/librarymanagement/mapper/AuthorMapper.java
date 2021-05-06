@@ -13,10 +13,6 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface AuthorMapper {
 
-    AuthorDto map(Author author);
-
-    List<AuthorDto> mapAsList(Collection<Author> authors);
-
     @Named("getAuthorsIds")
     static Set<Long> getAuthorsIds(Set<Author> authors) {
         return authors
@@ -24,4 +20,8 @@ public interface AuthorMapper {
                 .map(Author::getId)
                 .collect(Collectors.toSet());
     }
+
+    AuthorDto map(Author author);
+
+    List<AuthorDto> mapAsList(Collection<Author> authors);
 }

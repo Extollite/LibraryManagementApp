@@ -53,26 +53,23 @@ public class BookDetailsWebController {
         model.addAttribute("genres", genres);
         model.addAttribute("authors", authors);
 
-        log.info(bookDto.toString());
-
         return "edit";
     }
-    
+
     @GetMapping("/copies")
     public String editCopies(Model model, @RequestParam long bookId) {
         List<BookCopyDueDateDto> copies = bookCopyService.getAllByBookId(bookId);
-        
+
         model.addAttribute("bookCopies", copies);
-        
+
         return "copies";
     }
-    
+
     @DeleteMapping("/copies/delete")
     public String deleteCopy(@RequestParam long bookId, @RequestParam long copyId) {
         bookCopyService.deleteBookCopy(copyId);
-        
+
         return "redirect:/books/details?id=" + bookId;
-        // return editCopies(model, bookId);
     }
 
     @PostMapping("edit/save")

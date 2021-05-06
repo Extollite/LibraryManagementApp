@@ -13,7 +13,7 @@ import java.util.List;
 public interface BookCopyMapper {
 
     @Mappings({
-            @Mapping(target = "bookId", source = "id"),
+            @Mapping(target = "bookId", source = "book.id"),
             @Mapping(target = "available", ignore = true),
             @Mapping(target = "dueDate", ignore = true)
     })
