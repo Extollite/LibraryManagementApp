@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.rjsk.librarymanagement.mapper.BookCopyMapper;
 import pl.rjsk.librarymanagement.model.dto.BookCopyDueDateDto;
+import pl.rjsk.librarymanagement.model.entity.BookCopy;
 import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 
@@ -17,6 +18,10 @@ public class BookCopyService {
     private final BookCopyRepository bookCopyRepository;
     private final BookHistoryRepository bookHistoryRepository;
     private final BookCopyMapper bookCopyMapper;
+    
+    public void deleteBookCopy(long copyId) {
+        bookCopyRepository.deleteById(copyId);
+    }
 
     public List<BookCopyDueDateDto> getAllByBookId(long bookId) {
         return bookCopyMapper.mapAsList(bookCopyRepository.findAllByBookId(bookId))

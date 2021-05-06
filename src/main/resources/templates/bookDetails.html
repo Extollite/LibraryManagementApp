@@ -32,7 +32,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#copies" th:attr="data-url=@{|${#httpServletRequest.requestURI}/copies|}">
+            <a class="nav-link" href="#copies" th:attr="data-url=@{|${#httpServletRequest.requestURI}/copies?bookId=${id}|}">
                 Copies
             </a>
         </li>
