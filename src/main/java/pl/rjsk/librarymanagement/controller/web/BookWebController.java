@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/books")
+@RequestMapping({"/books", "/", ""})
 public class BookWebController {
 
     private final BookService bookService;
@@ -34,7 +34,7 @@ public class BookWebController {
                             @RequestParam(value = "size", defaultValue = "10") int size) {
         Page<BookWithCopiesDto> books = bookService.getAllBooksWithInstances(PageRequest.of(page - 1, size));
 
-        model.addAttribute("books", books.getContent());
+        model.addAttribute("books", books);
 
         if (books.hasContent()) {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, books.getTotalPages())

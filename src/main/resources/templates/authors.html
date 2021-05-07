@@ -26,61 +26,59 @@
         }
     </style>
 
-    <title>Books</title>
+    <title>Authors</title>
 </head>
 <body>
 <div th:replace="fragments/header :: header">&nbsp;</div>
 <!--Content start-->
 <div class="container" style="margin-top:5vh">
     <div class="text-center">
-
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>Title</th>
-                <th>Authors</th>
-                <th>Release year</th>
-                <th>Availability</th>
-                <th>Details</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Actions</th>
             </tr>
             </thead>
-            <tbody th:each="book : ${books}">
+            <tbody th:each="author : ${authors}">
             <tr>
-                <td th:text="${book.title}"></td>
+                <td th:text="${author.firstName}"></td>
+                <td th:text="${author.lastName}"></td>
                 <td>
-                    <th:block th:each="author, iter : ${book.authors}">
-                        <span th:text="${author.firstName}"></span>
-                        <span th:text="${iter.last} ? ${author.lastName} : ${author.lastName} + ','"></span>
-                    </th:block>
-                </td>
-                <td th:text="${book.yearOfFirstRelease}"></td>
-                <td th:text="${book.bookCopyIds.size()}"></td>
-                <td>
-                    <a th:href="@{/books/details(id=${book.id})}">
-                        <svg class="bi bi-pencil-square" fill="currentColor" height="16" viewBox="0 0 16 16"
-                             width="16" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                            <path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                                  fill-rule="evenodd"/>
-                        </svg>
-                    </a>
+                    <div>
+                        <form action="#"
+                              th:action="@{/authors/delete(authorId=${author.id})}"
+                              th:method="delete">
+                            <button class="btn btn-danger" type="submit">
+                                <svg class="bi bi-trash" fill="currentColor" height="16" viewBox="0 0 16 16"
+                                     width="16" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                                          fill-rule="evenodd"/>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             </tbody>
+
         </table>
 
-        <div th:if="${books.hasContent()}" class="d-flex align-content-start flex-wrap" style="justify-content: center">
+        <div th:if="${authors.hasContent()}" class="d-flex align-content-start flex-wrap"
+             style="justify-content: center">
             <div th:each="pageNumber : ${pageNumbers}" class="d-flex align-content-start ml-1">
                 <a
-                        th:href="@{/books(page=${pageNumber})}"
+                        th:href="@{/authors(page=${pageNumber})}"
                         th:text="${pageNumber}"
-                        th:class="${pageNumber == books.number + 1} ? disabled">Number</a>
-                <div class="ml-1" th:text="${pageNumber != books.totalPages} ? '|'"></div>
+                        th:class="${pageNumber == authors.number + 1} ? disabled">Number</a>
+                <div class="ml-1" th:text="${pageNumber != authors.totalPages} ? '|'"></div>
             </div>
         </div>
 
-        <form action="#">
-            <button class="btn btn-primary mt-2" type="submit">Add new book</button>
+        <form th:action="@{/authors/add}">
+            <button class="btn btn-primary mt-2" type="submit">Add new author</button>
         </form>
 
     </div>

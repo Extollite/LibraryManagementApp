@@ -1,6 +1,7 @@
 package pl.rjsk.librarymanagement.model.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import java.util.Set;
 @Entity
 @Table(name = "books")
 @Data
+@EqualsAndHashCode(of = "id")
 public class Book {
 
     @Id

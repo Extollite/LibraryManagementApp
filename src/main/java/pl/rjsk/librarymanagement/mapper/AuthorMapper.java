@@ -1,6 +1,7 @@
 package pl.rjsk.librarymanagement.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import pl.rjsk.librarymanagement.model.dto.AuthorDto;
 import pl.rjsk.librarymanagement.model.entity.Author;
@@ -13,7 +14,10 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface AuthorMapper {
 
-    AuthorDto map(Author author);
+    AuthorDto mapToDto(Author author);
+
+    @Mapping(target = "books", ignore = true)
+    Author mapToEntity(AuthorDto author);
 
     List<AuthorDto> mapAsList(Collection<Author> authors);
 

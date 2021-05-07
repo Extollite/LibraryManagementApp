@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class BookCopyServiceTest {
+class BookCopyServiceTest {
 
     private static final long BOOK_ID = 1L;
     private static final long BOOK_COPY_AVAILABLE_ID = 2L;
