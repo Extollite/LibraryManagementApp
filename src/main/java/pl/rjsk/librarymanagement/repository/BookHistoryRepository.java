@@ -22,4 +22,6 @@ public interface BookHistoryRepository extends JpaRepository<BookHistory, Long> 
             "where bh.bookCopy.id = :bookCopyId " +
             "and bh.returnedDate is null")
     Optional<OffsetDateTime> findDueDate(long bookCopyId);
+
+    void deleteAllByBookCopyId(long bookCopyId);
 }

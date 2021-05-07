@@ -76,13 +76,13 @@ class BookServiceTest {
         verify(bookRepository).findById(eq(BOOK_ID));
         verify(bookMapper).mapToDtoWithKeywords(eq(book));
     }
-    
+
     @Test
     void getBookWithKeywordsById_InvalidId() {
         String expectedMessage = "Unable to fetch book with given id: " + BOOK_ID;
-        
+
         when(bookRepository.findById(BOOK_ID)).thenReturn(Optional.empty());
-        
+
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> bookService.getBookWithKeywordsById(BOOK_ID));
         assertEquals(expectedMessage, exception.getMessage());

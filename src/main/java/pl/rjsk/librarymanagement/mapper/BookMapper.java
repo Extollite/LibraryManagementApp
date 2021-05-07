@@ -39,9 +39,9 @@ public interface BookMapper {
             @Mapping(target = "authorsIds", source = "authors", qualifiedByName = "getAuthorsIds")
     })
     BookWithKeywordsDto mapToDtoWithKeywords(Book book);
-    
+
     @Named("joinKeywords")
-    static String joinKeywords(Set<Keyword> keywords) {
+    default String joinKeywords(Set<Keyword> keywords) {
         return keywords
                 .stream()
                 .map(Keyword::getName)

@@ -18,7 +18,7 @@ public interface AuthorMapper {
     List<AuthorDto> mapAsList(Collection<Author> authors);
 
     @Named("getAuthorsIds")
-    static Set<Long> getAuthorsIds(Set<Author> authors) {
+    default Set<Long> getAuthorsIds(Set<Author> authors) {
         return authors
                 .stream()
                 .map(Author::getId)
