@@ -17,14 +17,6 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", uses = AuthorMapper.class)
 public interface BookMapper {
 
-    @Named("joinKeywords")
-    static String joinKeywords(Set<Keyword> keywords) {
-        return keywords
-                .stream()
-                .map(Keyword::getName)
-                .collect(Collectors.joining(", "));
-    }
-
     @Mappings({
             @Mapping(target = "genreId", source = "genre.id"),
             @Mapping(target = "numberOfAvailableCopies", ignore = true)
@@ -47,4 +39,12 @@ public interface BookMapper {
             @Mapping(target = "authorsIds", source = "authors", qualifiedByName = "getAuthorsIds")
     })
     BookWithKeywordsDto mapToDtoWithKeywords(Book book);
+
+    @Named("joinKeywords")
+    default String joinKeywords(Set<Keyword> keywords) {
+        return keywords
+                .stream()
+                .map(Keyword::getName)
+                .collect(Collectors.joining(", "));
+    }
 }
