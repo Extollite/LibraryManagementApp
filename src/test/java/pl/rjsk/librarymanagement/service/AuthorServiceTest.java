@@ -37,7 +37,7 @@ class AuthorServiceTest {
 
         assertThatThrownBy(() -> authorService.delete(AUTHOR_ID))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Unable to delete author with given id: 1");
+                .hasMessage("Unable to delete author with given id: " + AUTHOR_ID);
 
         verify(authorRepository).findById(eq(AUTHOR_ID));
     }

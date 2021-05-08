@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -75,6 +76,7 @@ class BookServiceTest {
 
         verify(bookRepository).findById(eq(BOOK_ID));
         verify(bookMapper).mapToDtoWithKeywords(eq(book));
+        verifyNoInteractions(bookHistoryRepository, bookCopyRepository);
     }
 
     @Test
@@ -83,9 +85,12 @@ class BookServiceTest {
 
         when(bookRepository.findById(BOOK_ID)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalArgumentException.class,
-                () -> bookService.getBookWithKeywordsById(BOOK_ID));
-        assertEquals(expectedMessage, exception.getMessage());
+        assertThatThrownBy(() -> bookService.getBookWithKeywordsById(BOOK_ID))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(expectedMessage);
+
+        verify(bookRepository).findById(eq(BOOK_ID));
+        verifyNoInteractions(bookHistoryRepository, bookCopyRepository, bookMapper);
     }
 
     @Test
