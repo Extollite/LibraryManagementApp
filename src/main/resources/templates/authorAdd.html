@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <!-- Bootstrap CSS -->
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css"
+          rel="stylesheet">
+
+    <script crossorigin="anonymous"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script crossorigin="anonymous"
+            integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+            src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+    <title>Author - add</title>
+</head>
+<body>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+<div class="container" style="margin-top:5vh">
+    <form action="#" method="post" th:action="@{|${#httpServletRequest.requestURI}/save|}" th:object="${author}">
+        <input name="id" th:value="*{id}" type="hidden">
+        <div class="d-flex align-content-start flex-wrap" style="justify-content: space-evenly">
+            <div class="form-group">
+                <label for="firstNameInput">First name</label>
+                <input class="form-control" id="firstNameInput" name="firstName" placeholder="Put author first name..."
+                       required th:value="*{firstName}" type="text">
+            </div>
+            <div class="form-group">
+                <label for="lastNameInput">Title</label>
+                <input class="form-control" id="lastNameInput" name="lastName" placeholder="Put author last name..."
+                       required th:value="*{lastName}" type="text">
+            </div>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+    </form>
+    <div style="margin-top:5vh" th:insert="~{fragments/footer :: footer}">&copy; 2021 Test Library</div>
+</div>
+</body>
+</html>
