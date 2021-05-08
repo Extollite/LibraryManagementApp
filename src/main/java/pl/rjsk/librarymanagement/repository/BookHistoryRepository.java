@@ -23,5 +23,10 @@ public interface BookHistoryRepository extends JpaRepository<BookHistory, Long> 
             "and bh.returnedDate is null")
     Optional<OffsetDateTime> findDueDate(long bookCopyId);
 
+    @Query("select bh from BookHistory bh " +
+            "where bh.bookCopy.id = :bookCopyId " +
+            "and bh.returnedDate is null")
+    Optional<BookHistory> findNotReturnedByBookId(long bookCopyId);
+
     void deleteAllByBookCopyId(long bookCopyId);
 }

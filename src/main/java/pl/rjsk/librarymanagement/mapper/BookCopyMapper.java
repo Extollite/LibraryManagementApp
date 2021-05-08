@@ -17,7 +17,12 @@ public interface BookCopyMapper {
             @Mapping(target = "available", ignore = true),
             @Mapping(target = "dueDate", ignore = true)
     })
-    BookCopyDueDateDto map(BookCopy bookCopy);
+    BookCopyDueDateDto mapToDto(BookCopy bookCopy);
+
+    @Mappings({
+            @Mapping(target = "book.id", source = "bookId")
+    })
+    BookCopy mapToEntity(BookCopyDueDateDto bookCopy);
 
     List<BookCopyDueDateDto> mapAsList(Collection<BookCopy> bookCopies);
 }

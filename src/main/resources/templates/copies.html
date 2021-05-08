@@ -39,7 +39,9 @@
                 <td th:text="${copy.available} ? 'n/a' : ${copy.dueDate}"></td>
                 <td>
                     <div style="float: left; padding-right: 2px">
-                        <form action="#">
+                        <form action="#"
+                              th:action="@{/books/details/copies/edit(copyId=${copy.id})}"
+                              th:method="post">
                             <button class="btn btn-secondary" type="submit">
                                 <svg class="bi bi-pencil-square" fill="currentColor" height="16" viewBox="0 0 16 16"
                                      width="16" xmlns="http://www.w3.org/2000/svg">
@@ -70,7 +72,9 @@
             </tbody>
         </table>
 
-        <form action="#">
+        <form action="#"
+              th:action="@{/books/details/copies/add(bookId=${bookId})}"
+              th:method="post">
             <button class="btn btn-primary" type="submit">Add new copy</button>
         </form>
     </div>
