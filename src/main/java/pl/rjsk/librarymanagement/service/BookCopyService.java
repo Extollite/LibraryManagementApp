@@ -52,6 +52,14 @@ public class BookCopyService {
     }
 
     @Transactional
+    public BookCopyDueDateDto getByCopyId(long id) {
+        BookCopy bookCopy = bookCopyRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book copy with given id: " + id));
+
+        return addDueOrReturnedDate(bookCopyMapper.mapToDto(bookCopy));
+    }
+
+    @Transactional
     public BookCopyDueDateDto saveBookCopy(BookCopyDueDateDto bookCopyDto) {
         if (!StringUtils.hasLength(bookCopyDto.getAlternativeTitle())) {
             bookCopyDto.setAlternativeTitle(null);
@@ -62,14 +70,6 @@ public class BookCopyService {
         bookCopyRepository.save(bookCopy);
 
         return bookCopyMapper.mapToDto(bookCopy);
-    }
-
-    @Transactional
-    public BookCopyDueDateDto getByCopyId(long id) {
-        BookCopy bookCopy = bookCopyRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book copy with given id: " + id));
-
-        return addDueOrReturnedDate(bookCopyMapper.mapToDto(bookCopy));
     }
 
     @Transactional
