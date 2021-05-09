@@ -163,13 +163,13 @@ class BookCopyServiceTest {
     }
 
     @Test
-    void updateBook_exceptionThrown() {
+    void updateBookCopy_exceptionThrown() {
         var bookCopyDto = new BookCopyDueDateDto();
         bookCopyDto.setId(BOOK_COPY_UNAVAILABLE_ID);
 
         when(bookCopyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> bookCopyService.updateBook(bookCopyDto))
+        assertThatThrownBy(() -> bookCopyService.updateBookCopy(bookCopyDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Unable to fetch book copy with given id: " + BOOK_COPY_UNAVAILABLE_ID);
 
@@ -178,7 +178,7 @@ class BookCopyServiceTest {
     }
 
     @Test
-    void updateBook_newHistoryEntry() {
+    void updateBookCopy_newHistoryEntry() {
         OffsetDateTime now = OffsetDateTime.now(fixedClock);
         var bookCopyDto = new BookCopyDueDateDto();
         bookCopyDto.setId(BOOK_COPY_AVAILABLE_ID);
@@ -192,7 +192,7 @@ class BookCopyServiceTest {
         when(bookCopyRepository.findById(anyLong())).thenReturn(Optional.of(bookCopy));
         when(bookHistoryRepository.findNotReturnedByBookId(anyLong())).thenReturn(Optional.empty());
 
-        BookCopy result = bookCopyService.updateBook(bookCopyDto);
+        BookCopy result = bookCopyService.updateBookCopy(bookCopyDto);
 
         assertThat(result)
                 .isNotNull()
@@ -211,7 +211,7 @@ class BookCopyServiceTest {
     }
 
     @Test
-    void updateBook_updateDueDate() {
+    void updateBookCopy_updateDueDate() {
         OffsetDateTime now = OffsetDateTime.now(fixedClock);
         var bookCopyDto = new BookCopyDueDateDto();
         bookCopyDto.setId(BOOK_COPY_AVAILABLE_ID);
@@ -228,7 +228,7 @@ class BookCopyServiceTest {
         when(bookCopyRepository.findById(anyLong())).thenReturn(Optional.of(bookCopy));
         when(bookHistoryRepository.findNotReturnedByBookId(anyLong())).thenReturn(Optional.of(bookHistory));
 
-        BookCopy result = bookCopyService.updateBook(bookCopyDto);
+        BookCopy result = bookCopyService.updateBookCopy(bookCopyDto);
 
         assertThat(result)
                 .isNotNull()
@@ -245,7 +245,7 @@ class BookCopyServiceTest {
     }
 
     @Test
-    void updateBook_updateReturnedDate() {
+    void updateBookCopy_updateReturnedDate() {
         OffsetDateTime now = OffsetDateTime.now(fixedClock);
         var bookCopyDto = new BookCopyDueDateDto();
         bookCopyDto.setId(BOOK_COPY_AVAILABLE_ID);
@@ -264,7 +264,7 @@ class BookCopyServiceTest {
         when(clock.instant()).thenReturn(fixedClock.instant());
         when(clock.getZone()).thenReturn(fixedClock.getZone());
 
-        BookCopy result = bookCopyService.updateBook(bookCopyDto);
+        BookCopy result = bookCopyService.updateBookCopy(bookCopyDto);
 
         assertThat(result)
                 .isNotNull()

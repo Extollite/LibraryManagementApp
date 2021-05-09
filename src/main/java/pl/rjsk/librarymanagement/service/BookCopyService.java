@@ -75,7 +75,7 @@ public class BookCopyService {
     }
 
     @Transactional
-    public BookCopy updateBook(BookCopyDueDateDto bookCopyDto) {
+    public BookCopy updateBookCopy(BookCopyDueDateDto bookCopyDto) {
         log.info(bookCopyDto.toString());
         var bookCopyToUpdate = bookCopyRepository.findById(bookCopyDto.getId())
                 .orElseThrow(() ->
