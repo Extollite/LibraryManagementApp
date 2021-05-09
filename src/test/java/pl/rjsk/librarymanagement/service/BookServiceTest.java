@@ -27,8 +27,6 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -67,8 +65,8 @@ class BookServiceTest {
         BookWithKeywordsDto bookDto = new BookWithKeywordsDto();
         bookDto.setId(BOOK_ID);
 
-        when(bookRepository.findById(BOOK_ID)).thenReturn(Optional.of(book));
-        when(bookMapper.mapToDtoWithKeywords(book)).thenReturn(bookDto);
+        when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
+        when(bookMapper.mapToDtoWithKeywords(any(Book.class))).thenReturn(bookDto);
 
         var result = bookService.getBookWithKeywordsById(BOOK_ID);
 
@@ -83,7 +81,7 @@ class BookServiceTest {
     void getBookWithKeywordsById_InvalidId() {
         String expectedMessage = "Unable to fetch book with given id: " + BOOK_ID;
 
-        when(bookRepository.findById(BOOK_ID)).thenReturn(Optional.empty());
+        when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookService.getBookWithKeywordsById(BOOK_ID))
                 .isInstanceOf(IllegalArgumentException.class)

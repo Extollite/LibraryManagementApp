@@ -70,6 +70,14 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public BookDto getBookById(long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + id));
+
+        return bookMapper.mapToDto(book);
+    }
+
     private BookDto addNumberOfAvailableCopies(BookDto bookDto) {
         List<Long> bookCopyIds =
                 bookCopyRepository.findAllByBookId(bookDto.getId())
