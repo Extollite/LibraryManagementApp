@@ -12,6 +12,7 @@ import pl.rjsk.librarymanagement.model.entity.BookHistory;
 import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 
+import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ public class BookCopyService {
     private final BookCopyRepository bookCopyRepository;
     private final BookHistoryRepository bookHistoryRepository;
     private final BookCopyMapper bookCopyMapper;
+    private final Clock systemClock;
 
     @Transactional
     public void deleteBookCopy(long copyId) {
@@ -73,11 +75,11 @@ public class BookCopyService {
     }
 
     @Transactional
-    public void updateBook(BookCopyDueDateDto bookCopyDto) {
+    public BookCopy updateBook(BookCopyDueDateDto bookCopyDto) {
         log.info(bookCopyDto.toString());
         var bookCopyToUpdate = bookCopyRepository.findById(bookCopyDto.getId())
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Unable to fetch book with given id: " + bookCopyDto.getId()));
+                        new IllegalArgumentException("Unable to fetch book copy with given id: " + bookCopyDto.getId()));
 
         if (!StringUtils.hasLength(bookCopyDto.getAlternativeTitle())) {
             bookCopyDto.setAlternativeTitle(null);
@@ -94,8 +96,9 @@ public class BookCopyService {
         if (bookHistoryOptional.isPresent()) {
             var bookHistory = bookHistoryOptional.get();
             if (bookCopyDto.isAvailable()) {
-                bookHistory.setReturnedDate(OffsetDateTime.now());
-            } else if (bookCopyDto.getDueDate().isAfter(bookHistory.getDueDate())) {
+                bookHistory.setReturnedDate(OffsetDateTime.now(systemClock));
+            } else if (bookCopyDto.getDueDate() != null
+                    && bookHistory.getDueDate().isBefore(bookCopyDto.getDueDate())) {
                 bookHistory.setDueDate(bookCopyDto.getDueDate());
             }
         } else if (!bookCopyDto.isAvailable()) {
@@ -104,5 +107,7 @@ public class BookCopyService {
             bookHistory.setDueDate(bookCopyDto.getDueDate());
             bookHistoryRepository.save(bookHistory);
         }
+
+        return bookCopyToUpdate;
     }
 }

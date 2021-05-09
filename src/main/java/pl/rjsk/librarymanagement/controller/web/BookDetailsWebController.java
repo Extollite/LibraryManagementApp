@@ -120,8 +120,6 @@ public class BookDetailsWebController {
 
     @PostMapping("/copies/edit/save")
     public String updateCopy(@ModelAttribute(value = "bookCopy") BookCopyDueDateDto bookCopyDto) {
-        System.out.println(bookCopyDto);
-
         bookCopyService.updateBook(bookCopyDto);
 
         return "redirect:/books/details?id=" + bookCopyDto.getBookId();
