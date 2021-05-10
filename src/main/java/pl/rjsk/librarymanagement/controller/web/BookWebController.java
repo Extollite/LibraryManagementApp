@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithKeywordsDto;
 import pl.rjsk.librarymanagement.model.entity.Author;
@@ -56,26 +55,26 @@ public class BookWebController {
 
         return "books";
     }
-    
-    @PostMapping("/add")
-    public String addBook(Model model) {
+
+    @GetMapping("/add")
+    public String save(Model model) {
         BookWithKeywordsDto bookDto = new BookWithKeywordsDto();
         List<Genre> genres = genreService.getAllGenres();
         List<Author> authors = authorService.getAllAuthors();
-        
+
         model.addAttribute("book", bookDto);
         model.addAttribute("genres", genres);
         model.addAttribute("authors", authors);
-        
+
         return "bookAdd";
     }
-    
+
     @PostMapping("/add/save")
-    public String saveBook(@ModelAttribute(value = "book") BookWithKeywordsDto bookDto) {
+    public String save(@ModelAttribute(value = "book") BookWithKeywordsDto bookDto) {
         bookService.save(bookDto);
-        
+
         log.info(bookDto.toString());
-        
+
         return "redirect:/books";
     }
 }

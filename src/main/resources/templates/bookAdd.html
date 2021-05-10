@@ -22,7 +22,8 @@
 <body>
 <div th:replace="fragments/header :: header">&nbsp;</div>
 <div class="container">
-    <form action="#" method="post" th:action="@{|${#httpServletRequest.requestURI}/save|}" th:object="${book}" style="padding-top: 10px">
+    <form action="#" method="post" style="padding-top: 10px" th:action="@{|${#httpServletRequest.requestURI}/save|}"
+          th:object="${book}">
         <input name="id" th:value="*{id}" type="hidden">
         <div class="d-flex align-content-start flex-wrap" style="justify-content: space-evenly">
             <div class="form-group">

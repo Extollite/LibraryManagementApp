@@ -34,14 +34,14 @@ public class BookService {
     private final BookCopyRepository bookCopyRepository;
     private final BookHistoryRepository bookHistoryRepository;
     private final BookMapper bookMapper;
-    
+
     @Transactional
     public BookWithKeywordsDto save(BookWithKeywordsDto bookDto) {
         Book newBook = new Book();
         updateBookByBookDto(bookDto, newBook);
-        
+
         var book = bookRepository.save(newBook);
-        
+
         return bookMapper.mapToDtoWithKeywords(book);
     }
 
@@ -52,7 +52,7 @@ public class BookService {
 
         updateBookByBookDto(bookDto, bookToUpdate);
     }
-    
+
     private void updateBookByBookDto(BookWithKeywordsDto bookDto, Book bookToUpdate) {
         Set<Keyword> parsedKeywords = Arrays.stream(bookDto.getKeywords().split("\\s*,\\s*"))
                 .map(Keyword::new)

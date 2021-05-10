@@ -33,7 +33,12 @@ public class GenreService {
                 book.setGenre(null);
             }
         }
-        
+
         genreRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Genre save(Genre genre) {
+        return genreRepository.save(genre);
     }
 }
