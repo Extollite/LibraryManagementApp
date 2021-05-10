@@ -79,7 +79,9 @@
             </div>
         </div>
 
-        <form action="#">
+        <form action="#"
+              th:action="@{/books/add}"
+              th:method="post">
             <button class="btn btn-primary mt-2" type="submit">Add new book</button>
         </form>
 
