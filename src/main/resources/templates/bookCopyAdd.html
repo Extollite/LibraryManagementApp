@@ -35,9 +35,9 @@
             </div>
             <div class="form-group">
                 <label for="bookTitleInput">Book title</label>
-                <input class="form-control" id="bookTitleInput"
-                       value="Title"
-                       th:value="${book.title + ' (' + book.yearOfFirstRelease + ')'}" type="text" disabled>
+                <input class="form-control" disabled
+                       id="bookTitleInput"
+                       th:value="${book.title + ' (' + book.yearOfFirstRelease + ')'}" type="text" value="Title">
             </div>
             <div class="form-group">
                 <label for="languageCodeInput">Language code</label>
@@ -53,22 +53,22 @@
             </div>
             <div class="form-group">
                 <label for="yearOfReleaseInput">Year of release</label>
-                <input class="form-control" id="yearOfReleaseInput" name="yearOfRelease"
-                       placeholder="Put year of release..."
-                       required th:value="*{yearOfRelease}"
-                       type="number" min="1454" step="1"
-                       th:max="${#temporals.format(#temporals.createNow(), 'yyyy')}">
+                <input class="form-control" id="yearOfReleaseInput" min="1454"
+                       name="yearOfRelease"
+                       placeholder="Put year of release..." required
+                       step="1" th:max="${#temporals.format(#temporals.createNow(), 'yyyy')}" th:value="*{yearOfRelease}"
+                       type="number">
             </div>
             <div class="form-group">
                 <label for="pagesCountInput">Pages count</label>
-                <input class="form-control" id="pagesCountInput" name="pagesCount"
-                       placeholder="Put pages count..."
-                       required th:value="*{pagesCount}"
-                       type="number" min="1" step="1">
+                <input class="form-control" id="pagesCountInput" min="1"
+                       name="pagesCount"
+                       placeholder="Put pages count..." required
+                       step="1" th:value="*{pagesCount}" type="number">
             </div>
         </div>
         <div class="d-flex align-content-start flex-wrap" style="justify-content: space-evenly">
-            <a th:href="@{/books/details(id=${book.id})}" class="btn btn-primary" role="button" aria-pressed="true">Return</a>
+            <a aria-pressed="true" class="btn btn-primary" role="button" th:href="@{/books/details(id=${book.id})}">Return</a>
             <div class="text-center">
                 <button class="btn btn-primary" type="submit">Submit</button>
             </div>

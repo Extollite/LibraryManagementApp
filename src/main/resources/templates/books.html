@@ -69,12 +69,12 @@
             </tbody>
         </table>
 
-        <div th:if="${books.hasContent()}" class="d-flex align-content-start flex-wrap" style="justify-content: center">
-            <div th:each="pageNumber : ${pageNumbers}" class="d-flex align-content-start ml-1">
+        <div class="d-flex align-content-start flex-wrap" style="justify-content: center" th:if="${books.hasContent()}">
+            <div class="d-flex align-content-start ml-1" th:each="pageNumber : ${pageNumbers}">
                 <a
+                        th:class="${pageNumber == books.number + 1} ? disabled"
                         th:href="@{/books(page=${pageNumber})}"
-                        th:text="${pageNumber}"
-                        th:class="${pageNumber == books.number + 1} ? disabled">Number</a>
+                        th:text="${pageNumber}">Number</a>
                 <div class="ml-1" th:text="${pageNumber != books.totalPages} ? '|'"></div>
             </div>
         </div>

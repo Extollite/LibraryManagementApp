@@ -37,7 +37,7 @@ public class Book {
     private Set<Author> authors;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn()
     private Genre genre;
 
     @Column(nullable = false)
