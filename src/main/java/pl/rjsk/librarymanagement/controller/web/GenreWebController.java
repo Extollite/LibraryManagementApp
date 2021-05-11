@@ -36,7 +36,7 @@ public class GenreWebController {
     }
 
     @GetMapping("/add")
-    public String addGenre(Model model) {
+    public String save(Model model) {
         Genre genre = new Genre();
 
         model.addAttribute("genre", genre);
@@ -45,7 +45,7 @@ public class GenreWebController {
     }
 
     @PostMapping("/add/save")
-    public String addGenre(@ModelAttribute(value = "genre") Genre genre) {
+    public String save(@ModelAttribute(value = "genre") Genre genre) {
         genreService.save(genre);
 
         log.info(genre.toString());
@@ -55,7 +55,7 @@ public class GenreWebController {
 
     @DeleteMapping("/delete")
     public String deleteGenre(@RequestParam long id) {
-        genreService.deleteGenre(id);
+        genreService.delete(id);
 
         return "redirect:/genres";
     }

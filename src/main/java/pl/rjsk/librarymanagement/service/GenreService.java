@@ -22,7 +22,7 @@ public class GenreService {
     }
 
     @Transactional
-    public void deleteGenre(long id) {
+    public void delete(long id) {
         Genre genre = genreRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Unable to delete genre with given id: " + id));
 
