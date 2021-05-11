@@ -18,6 +18,7 @@ import pl.rjsk.librarymanagement.model.entity.BookCopy;
 import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
+import pl.rjsk.librarymanagement.repository.KeywordRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -54,6 +55,9 @@ class BookServiceTest {
     @Mock
     private BookMapper bookMapper;
 
+    @Mock
+    private KeywordRepository keywordRepository;
+
     @InjectMocks
     private BookService bookService;
 
@@ -74,7 +78,7 @@ class BookServiceTest {
 
         verify(bookRepository).findById(eq(BOOK_ID));
         verify(bookMapper).mapToDtoWithKeywords(eq(book));
-        verifyNoInteractions(bookHistoryRepository, bookCopyRepository);
+        verifyNoInteractions(bookHistoryRepository, bookCopyRepository, keywordRepository);
     }
 
     @Test
@@ -88,7 +92,7 @@ class BookServiceTest {
                 .hasMessage(expectedMessage);
 
         verify(bookRepository).findById(eq(BOOK_ID));
-        verifyNoInteractions(bookHistoryRepository, bookCopyRepository, bookMapper);
+        verifyNoInteractions(bookHistoryRepository, bookCopyRepository, bookMapper, keywordRepository);
     }
 
     @Test
@@ -119,6 +123,7 @@ class BookServiceTest {
         verify(bookMapper).mapIterableToDtoList(eq(books));
         verify(bookCopyRepository).findAllByBookId(eq(BOOK_ID));
         verify(bookHistoryRepository).findAllNotAvailable(eq(bookCopyIds));
+        verifyNoInteractions(keywordRepository);
     }
 
     @Test
@@ -154,6 +159,6 @@ class BookServiceTest {
         verify(bookRepository).findAll(eq(paging));
         verify(bookMapper).mapIterableToDtoWithCopiesList(eq(bookPage));
         verify(bookCopyRepository).findAllByBookId(eq(BOOK_ID));
-        verifyNoInteractions(bookHistoryRepository);
+        verifyNoInteractions(bookHistoryRepository, keywordRepository);
     }
 }

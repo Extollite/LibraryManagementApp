@@ -26,12 +26,10 @@ public class GenreService {
         Genre genre = genreRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Unable to delete genre with given id: " + id));
 
-        Iterable<Book> books = bookRepository.findAll();
+        List<Book> books = bookRepository.findAllByGenreId(genre.getId());
 
         for (Book book : books) {
-            if (book.getGenre().equals(genre)) {
-                book.setGenre(null);
-            }
+            book.setGenre(null);
         }
 
         genreRepository.deleteById(id);
