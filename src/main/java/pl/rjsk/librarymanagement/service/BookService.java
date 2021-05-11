@@ -19,6 +19,7 @@ import pl.rjsk.librarymanagement.model.entity.Keyword;
 import pl.rjsk.librarymanagement.repository.BookCopyRepository;
 import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
+import pl.rjsk.librarymanagement.repository.KeywordRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +35,7 @@ public class BookService {
     private final BookCopyRepository bookCopyRepository;
     private final BookHistoryRepository bookHistoryRepository;
     private final BookMapper bookMapper;
+    private final KeywordRepository keywordRepository;
 
     @Transactional
     public BookWithKeywordsDto save(BookWithKeywordsDto bookDto) {
@@ -54,9 +56,7 @@ public class BookService {
     }
 
     private void updateBookByBookDto(BookWithKeywordsDto bookDto, Book bookToUpdate) {
-        Set<Keyword> parsedKeywords = Arrays.stream(bookDto.getKeywords().split("\\s*,\\s*"))
-                .map(Keyword::new)
-                .collect(Collectors.toSet());
+        Set<Keyword> keywords = prepareKeywords(bookDto.getKeywords());
         Set<Author> authors = bookDto.getAuthorsIds().stream().map(Author::new).collect(Collectors.toSet());
 
         bookToUpdate.setTitle(bookDto.getTitle());
@@ -64,7 +64,27 @@ public class BookService {
         bookToUpdate.setGenre(new Genre(bookDto.getGenreId()));
         bookToUpdate.setYearOfFirstRelease(bookDto.getYearOfFirstRelease());
         bookToUpdate.setDescription(bookDto.getDescription());
-        bookToUpdate.setKeywords(parsedKeywords);
+        bookToUpdate.setKeywords(keywords);
+    }
+
+    private Set<Keyword> prepareKeywords(String keywords) {
+        Set<String> keywordNames = Arrays.stream(keywords.split("\\s*,\\s*"))
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+        Set<Keyword> existingKeywords = keywordRepository.findAllByNameIn(keywordNames);
+        Set<String> existingKeywordNames = existingKeywords
+                .stream()
+                .map(Keyword::getName)
+                .collect(Collectors.toSet());
+        keywordNames.removeAll(existingKeywordNames);
+
+        Set<Keyword> parsedKeywords = keywordNames
+                .stream()
+                .map(Keyword::new)
+                .collect(Collectors.toSet());
+        parsedKeywords.addAll(existingKeywords);
+
+        return parsedKeywords;
     }
 
     @Transactional
