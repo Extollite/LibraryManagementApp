@@ -37,7 +37,7 @@ public class Book {
     private Set<Author> authors;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Genre genre;
 
     @Column(nullable = false)
@@ -46,7 +46,7 @@ public class Book {
     @Column(length = 4000)
     private String description;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(joinColumns = {@JoinColumn(name = "book_id")},
             inverseJoinColumns = {@JoinColumn(name = "keyword_id")}
     )

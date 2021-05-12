@@ -1,5 +1,6 @@
 package pl.rjsk.librarymanagement.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -22,10 +23,12 @@ public class BookCopyDueDateDto {
     private boolean available;
     private OffsetDateTime dueDate;
 
+    @JsonIgnore
     public String getDueDateAsLocalTime() {
         return formatter.format(dueDate);
     }
 
+    @JsonIgnore
     public void setDueDateLocalTime(String dueDateLocalTime) {
         var localDateTime = LocalDateTime.parse(dueDateLocalTime, formatter);
         dueDate = localDateTime.atOffset(ZoneOffset.UTC);

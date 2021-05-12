@@ -39,26 +39,25 @@ class BookCopyServiceTest {
     private static final long BOOK_ID = 1L;
     private static final long BOOK_COPY_AVAILABLE_ID = 2L;
     private static final long BOOK_COPY_UNAVAILABLE_ID = 3L;
-
+    private static Clock fixedClock;
+    
     @Mock
     private BookCopyRepository bookCopyRepository;
-
+    
     @Mock
     private BookHistoryRepository bookHistoryRepository;
-
+    
     @Mock
     private BookCopyMapper bookCopyMapper;
-
+    
     @Mock
     private Clock clock;
-
+    
     @InjectMocks
     private BookCopyService bookCopyService;
-
+    
     @Captor
     private ArgumentCaptor<BookHistory> bookHistoryCaptor;
-
-    private static Clock fixedClock;
 
     @BeforeAll
     static void setupTest() {
