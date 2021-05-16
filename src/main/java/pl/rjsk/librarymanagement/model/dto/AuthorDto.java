@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 public class AuthorDto {
-    
+
     @EqualsAndHashCode.Exclude
     private long id;
     private String firstName;

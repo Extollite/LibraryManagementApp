@@ -12,7 +12,7 @@ import java.util.TimeZone;
 public class LibraryManagementApplication {
 
     public static void main(String[] args) {
-         SpringApplication.run(LibraryManagementApplication.class, args);
+        SpringApplication.run(LibraryManagementApplication.class, args);
     }
 
     @PostConstruct

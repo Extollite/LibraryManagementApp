@@ -16,9 +16,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/debug")
 public class DebugController {
+    
     private final GoogleBooksSaver googleBooksSaver;
     private final GenreService genreService;
-    
+
     @GetMapping("/gapi/queryBooks")
     public List<Volume> queryGoogleApi(@RequestParam String query, @RequestParam long genreId) {
         Genre genre = genreService.getById(genreId);

@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GoogleBooksMapper {
+    
     public static BookDto mapVolumeToBook(Volume volume, long categoryId) {
         BookDto bookWithKeywordsDto = new BookDto();
         Volume.VolumeInfo volumeInfo = volume.getVolumeInfo();
@@ -75,7 +76,7 @@ public class GoogleBooksMapper {
         bookCopyDto.setPagesCount(volInfo.getPageCount());
         bookCopyDto.setAvailable(true);
         bookCopyDto.setDueDate(null);
-        
+
         return bookCopyDto;
     }
 }

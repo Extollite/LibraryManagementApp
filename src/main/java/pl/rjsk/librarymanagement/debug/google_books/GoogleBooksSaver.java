@@ -23,11 +23,11 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class GoogleBooksSaver {
+    
     private final BookService bookService;
     private final BookCopyService bookCopyService;
     private final AuthorService authorService;
     private final AuthorMapper authorMapper;
-
 
     public List<Volume> saveBooksFromQuery(Genre genre, String title) {
         List<Volume> volumes = GoogleBooksFetcher.fetchBooksFromAPI(title, genre);
@@ -45,7 +45,7 @@ public class GoogleBooksSaver {
 
         BookWithKeywordsDto bookWithKeywordsDto = GoogleBooksMapper.mapToBookWithKeywordsDto(bookDto, authorsIds);
         BookWithKeywordsDto savedBook = saveNewBook(bookWithKeywordsDto);
-        
+
         saveNewCopy(volume, savedBook);
     }
 
@@ -74,7 +74,7 @@ public class GoogleBooksSaver {
                 })
                 .collect(Collectors.toSet());
     }
-    
+
     private void saveNewCopy(Volume volume, BookWithKeywordsDto bookWithKeywordsDto) {
         BookCopyDueDateDto bookCopyDto = GoogleBooksMapper.mapToBookCopyDueDateDto(volume, bookWithKeywordsDto);
         bookCopyService.saveBookCopy(bookCopyDto);
