@@ -16,11 +16,11 @@ import java.util.Set;
 @Entity
 @Table(name = "authors")
 @Data
-@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 public class Author {
 
     @Id
+    @EqualsAndHashCode.Exclude
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     private Long id;
@@ -31,6 +31,7 @@ public class Author {
     @Column(nullable = false)
     private String lastName;
 
+    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "authors")
     private Set<Book> books;
 

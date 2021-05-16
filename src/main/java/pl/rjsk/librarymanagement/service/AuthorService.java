@@ -27,6 +27,12 @@ public class AuthorService {
         return authorRepository.findAll(pageable);
     }
 
+    public Author getByFirstLastName(String firstName, String lastName) {
+        return authorRepository.findAuthorByFirstNameAndLastName(firstName, lastName)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Unable to find author with given firstName: " + firstName + " and lastName: " + lastName));
+    }
+
     @Transactional
     public void delete(long authorId) {
         Author author = authorRepository.findById(authorId)
