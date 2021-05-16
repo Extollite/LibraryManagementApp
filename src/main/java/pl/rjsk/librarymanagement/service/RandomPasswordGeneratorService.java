@@ -31,18 +31,18 @@ public class RandomPasswordGeneratorService {
                 .toString();
     }
 
-    public IntStream getRandomAlphabets(int count, boolean upperCase) {
+    private IntStream getRandomAlphabets(int count, boolean upperCase) {
         if (upperCase) {
             return secureRandom.ints(count, 65, 90);
         }
         return secureRandom.ints(count, 97, 122);
     }
 
-    public IntStream getRandomNumbers(int count) {
+    private IntStream getRandomNumbers(int count) {
         return secureRandom.ints(count, 48, 57);
     }
 
-    public IntStream getRandomSpecialChars(int count) {
+    private IntStream getRandomSpecialChars(int count) {
         return secureRandom.ints(count, 33, 45);
     }
 }
