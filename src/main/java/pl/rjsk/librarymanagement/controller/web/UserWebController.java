@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import pl.rjsk.librarymanagement.model.entity.User;
+import pl.rjsk.librarymanagement.service.RandomPasswordGeneratorService;
 import pl.rjsk.librarymanagement.service.UserService;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -25,6 +25,7 @@ import java.util.stream.IntStream;
 public class UserWebController {
 
     private final UserService userService;
+    private final RandomPasswordGeneratorService randomPasswordGeneratorService;
 
     @ModelAttribute("module")
     private String module() {
@@ -59,7 +60,7 @@ public class UserWebController {
     @GetMapping("/add")
     public String addUser(Model model) {
         User user = new User();
-        user.setPassword(UUID.randomUUID().toString());
+        user.setPassword(randomPasswordGeneratorService.generateSecureRandomPassword());
 
         model.addAttribute("user", user);
 
