@@ -1,17 +1,26 @@
 package pl.rjsk.librarymanagement.model.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import pl.rjsk.librarymanagement.security.data.UserRole;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 @Data
+@EqualsAndHashCode(of = "id")
 public class User {
 
     @Id
@@ -28,6 +37,10 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
-    @Column(nullable = false, length = 320)
-    private String email;
+    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<UserRole> roles = new HashSet<>();
 }

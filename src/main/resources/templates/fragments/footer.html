@@ -9,12 +9,7 @@
           integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" rel="stylesheet">
 </head>
 <body>
-<!--/*  Multiple fragments may be defined in one file */-->
 <div th:align="center" th:fragment="footer">
-    &copy; <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2021</span>
-    <span th:text="${@environment.getProperty('library.name')}">Test Library</span>
-</div>
-<div th:align="center" th:fragment="footer-admin">
     &copy; <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2021</span>
     <span th:text="${@environment.getProperty('library.name')}">Test Library</span><br>
     App version: <span th:text="${@environment.getProperty('build.version')}"></span>

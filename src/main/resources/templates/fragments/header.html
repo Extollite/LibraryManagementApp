@@ -33,22 +33,11 @@
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">
-                <!--                <li th:if="${#authorization.expression('!isAuthenticated()')}">-->
-                <!--                    <a class="nav-link" href="/signin" th:href="@{/signin}">-->
-                <!--                        <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp;Sign in-->
-                <!--                    </a>-->
-                <!--                </li>-->
-                <!--                <li th:if="${#authorization.expression('isAuthenticated()')}">-->
-                <!--                    <a class="nav-link" href="/logout" th:href="@{#}" onclick="$('#form').submit();">-->
-                <!--                        <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>&nbsp;Logout-->
-                <!--                    </a>-->
-                <!--                    <form style="visibility: hidden" id="form" method="post" action="#" th:action="@{/logout}"></form>-->
-                <!--                </li>-->
-                <!--                Fix when Spring Security-->
-                <li>
-                    <a class="nav-link" href="/signin" th:href="@{/signin}">
-                        <span aria-hidden="true" class="glyphicon glyphicon-log-in"></span>&nbsp;Sign in
+                <li th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a class="nav-link" href="/logout" th:href="@{#}" onclick="$('#form').submit();">
+                        <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>&nbsp;Logout
                     </a>
+                    <form style="visibility: hidden" id="form" method="post" action="#" th:action="@{/logout}"></form>
                 </li>
             </ul>
         </div>
