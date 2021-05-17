@@ -23,6 +23,12 @@ public class UserService {
     }
 
     @Transactional
+    public User getUserByPesel(String pesel) {
+        return userRepository.findByPesel(pesel)
+                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch user with given pesel: " + pesel));
+    }
+
+    @Transactional
     public void delete(long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Unable to delete user with given id: " + userId));
@@ -44,5 +50,18 @@ public class UserService {
         user.getRoles().add(UserRole.USER);
 
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public User updatePassword(String pesel, String password) {
+        if (!StringUtils.hasLength(password)) {
+            throw new IllegalArgumentException("Password cannot be empty!");
+        }
+        User user = userRepository.findByPesel(pesel)
+                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch user with given pesel: " + pesel));
+
+        user.setPassword(passwordEncoder.encode(password));
+
+        return user;
     }
 }
