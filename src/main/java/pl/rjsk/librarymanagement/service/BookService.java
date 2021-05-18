@@ -45,10 +45,10 @@ public class BookService {
     private final BookMapper bookMapper;
     private final KeywordRepository keywordRepository;
     private final Set<String> keywordStopWords = new HashSet<>();
-    
-    @Value("${keywords.stopwords.filename}") 
+
+    @Value("${keywords.stopwords.filename}")
     private String keywordsStopWordsFilename;
-    
+
     @PostConstruct
     private void loadKeywordStopWordsFromFile() {
         try {

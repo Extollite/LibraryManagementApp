@@ -34,10 +34,10 @@
             </ul>
             <ul class="navbar-nav ml-auto">
                 <li th:if="${#authorization.expression('isAuthenticated()')}">
-                    <a class="nav-link" href="/logout" th:href="@{#}" onclick="$('#form').submit();">
-                        <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>&nbsp;Logout
+                    <a class="nav-link" href="/logout" onclick="$('#form').submit();" th:href="@{#}">
+                        <span aria-hidden="true" class="glyphicon glyphicon-log-out"></span>&nbsp;Logout
                     </a>
-                    <form style="visibility: hidden" id="form" method="post" action="#" th:action="@{/logout}"></form>
+                    <form action="#" id="form" method="post" style="visibility: hidden" th:action="@{/logout}"></form>
                 </li>
             </ul>
         </div>

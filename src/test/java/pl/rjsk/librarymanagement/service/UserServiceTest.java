@@ -40,6 +40,10 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    private static Stream<String> saveEmptyPasswordProvider() {
+        return Stream.of(null, "");
+    }
+
     @Test
     void delete_thrownException() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -63,10 +67,6 @@ class UserServiceTest {
         verify(userRepository).findById(eq(USER_ID));
         verify(userRepository).delete(eq(user));
         verifyNoInteractions(passwordEncoder);
-    }
-
-    private static Stream<String> saveEmptyPasswordProvider() {
-        return Stream.of(null, "");
     }
 
     @ParameterizedTest

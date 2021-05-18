@@ -9,9 +9,9 @@ import java.util.Optional;
 
 @Repository
 public interface AuthorRepository extends JpaRepository<Author, Long> {
-    
+
     @Override
     List<Author> findAll();
-    
+
     Optional<Author> findAuthorByFirstNameAndLastName(String firstName, String lastName);
 }
