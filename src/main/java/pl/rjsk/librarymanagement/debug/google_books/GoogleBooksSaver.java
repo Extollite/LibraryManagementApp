@@ -9,13 +9,12 @@ import pl.rjsk.librarymanagement.model.dto.AuthorDto;
 import pl.rjsk.librarymanagement.model.dto.BookCopyDueDateDto;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithKeywordsDto;
-import pl.rjsk.librarymanagement.model.entity.Author;
 import pl.rjsk.librarymanagement.model.entity.Genre;
 import pl.rjsk.librarymanagement.service.AuthorService;
 import pl.rjsk.librarymanagement.service.BookCopyService;
 import pl.rjsk.librarymanagement.service.BookService;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -50,25 +49,27 @@ public class GoogleBooksSaver {
     }
 
     private Set<Long> saveNewAuthors(List<AuthorDto> authors) {
-        List<AuthorDto> currentAuthors = authorService.getAllAuthors().stream()
+        List<AuthorDto> currentAuthors = authorService.getAllAuthors()
+                .stream()
                 .map(authorMapper::mapToDto)
                 .collect(Collectors.toList());
 
-        List<AuthorDto> newAuthors = authors.stream()
-                .filter(a -> !currentAuthors.contains(a))
-                .collect(Collectors.toList());
+        List<AuthorDto> newAuthors = new ArrayList<>(authors);
+        newAuthors.removeAll(currentAuthors);
 
-        Set<Long> authorsIds = authorService.saveAll(newAuthors).stream()
+        Set<Long> authorsIds = authorService.saveAll(newAuthors)
+                .stream()
                 .map(AuthorDto::getId)
                 .collect(Collectors.toSet());
-        
-        authors.forEach(author -> {
-            currentAuthors.stream()
-                    .filter(curr -> curr.equals(author))
-                    .map(AuthorDto::getId)
-                    .forEach(authorsIds::add);
-        });
-        
+
+        Set<Long> currentAuthorsIds = currentAuthors
+                .stream()
+                .filter(authors::contains)
+                .map(AuthorDto::getId)
+                .collect(Collectors.toSet());
+
+        authorsIds.addAll(currentAuthorsIds);
+
         return authorsIds;
     }
 

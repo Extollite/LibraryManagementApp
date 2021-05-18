@@ -56,8 +56,7 @@ public class BookService {
             List<String> lines = Files.readAllLines(file.toPath());
             keywordStopWords.addAll(lines);
         } catch (IOException ex) {
-            ex.printStackTrace();
-            log.error("Error: ", ex);
+            log.error("Exception: ", ex);
         }
     }
 

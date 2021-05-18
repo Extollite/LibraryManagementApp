@@ -10,9 +10,9 @@ import pl.rjsk.librarymanagement.model.dto.AuthorDto;
 import pl.rjsk.librarymanagement.model.entity.Author;
 import pl.rjsk.librarymanagement.repository.AuthorRepository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +27,6 @@ public class AuthorService {
 
     public Page<Author> getAllAuthors(Pageable pageable) {
         return authorRepository.findAll(pageable);
-    }
-
-    public Author getByFirstLastName(String firstName, String lastName) {
-        return authorRepository.findAuthorByFirstNameAndLastName(firstName, lastName)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Unable to find author with given firstName: " + firstName + " and lastName: " + lastName));
     }
 
     @Transactional
@@ -51,10 +45,10 @@ public class AuthorService {
 
         return authorMapper.mapToDto(author);
     }
-    
+
     @Transactional
-    public List<AuthorDto> saveAll(Iterable<AuthorDto> authorDtos) {
-        List<Author> authors = StreamSupport.stream(authorDtos.spliterator(), false)
+    public List<AuthorDto> saveAll(Collection<AuthorDto> authorDtos) {
+        List<Author> authors = authorDtos.stream()
                 .map(authorMapper::mapToEntity)
                 .collect(Collectors.toList());
         return authorMapper.mapAsList(authorRepository.saveAll(authors));

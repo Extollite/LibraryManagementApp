@@ -65,6 +65,7 @@ public class GoogleBooksMapper {
         String publishedDate = volInfo.getPublishedDate();
         int releaseYear = publishedDate != null ? Integer.parseInt(publishedDate.substring(0, 4)) : 0;
         String publisher = volInfo.getPublisher() == null ? "unknown" : volInfo.getPublisher();
+
         BookCopyDueDateDto bookCopyDto = new BookCopyDueDateDto();
 
         bookCopyDto.setAlternativeTitle(volInfo.getSubtitle());

@@ -25,7 +25,7 @@ public class GoogleBooksFetcher {
                 .setGoogleClientRequestInitializer(new BooksRequestInitializer(API_KEY))
                 .build();
 
-        System.out.println("Query: [" + query + "]");
+        log.info("Query: [" + query + "]");
         Books.Volumes.List volumesList = books.volumes().list(query);
         volumesList.setPrintType("books");
         volumesList.setLangRestrict("en");
@@ -55,7 +55,7 @@ public class GoogleBooksFetcher {
         try {
             return queryGoogleBooks(jsonFactory, query, genreId);
         } catch (Exception ex) {
-            log.error("Error: ", ex);
+            log.error("Exception: ", ex);
         }
 
         return Collections.emptyList();
