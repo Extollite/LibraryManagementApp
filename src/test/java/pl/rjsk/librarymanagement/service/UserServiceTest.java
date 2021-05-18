@@ -29,7 +29,7 @@ class UserServiceTest {
 
     private static final long USER_ID = 1L;
     private static final String PESEL = "pesel";
-    private static final String PASSWORD = "passwd";
+    private static final String PASSWORD = "password";
 
     @Mock
     private UserRepository userRepository;
@@ -77,7 +77,7 @@ class UserServiceTest {
 
         assertThatThrownBy(() -> userService.save(user))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Password cannot be empty!");
+                .hasMessage("Password must contain at least 5 characters");
 
         verifyNoInteractions(userRepository, passwordEncoder);
     }
@@ -127,17 +127,17 @@ class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("saveEmptyPasswordProvider")
-    void update_emptyPassword(String password) {
+    void updatePassword_emptyPassword(String password) {
 
         assertThatThrownBy(() -> userService.updatePassword(PESEL, password))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Password cannot be empty!");
+                .hasMessage("Password must contain at least 5 characters");
 
         verifyNoInteractions(userRepository, passwordEncoder);
     }
 
     @Test
-    void update_peselExists() {
+    void updatePassword_peselExists() {
         when(userRepository.findByPesel(anyString())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.updatePassword(PESEL, PASSWORD))
@@ -149,7 +149,7 @@ class UserServiceTest {
     }
 
     @Test
-    void update() {
+    void updatePassword() {
         var user = new User();
         user.setPesel(PESEL);
         user.setPassword("pass");
