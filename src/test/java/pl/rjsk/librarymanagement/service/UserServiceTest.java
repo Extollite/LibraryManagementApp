@@ -12,7 +12,6 @@ import pl.rjsk.librarymanagement.model.entity.User;
 import pl.rjsk.librarymanagement.repository.UserRepository;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -39,10 +38,6 @@ class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
-
-    private static Stream<String> saveEmptyPasswordProvider() {
-        return Stream.of(null, "");
-    }
 
     @Test
     void delete_thrownException() {

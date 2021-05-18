@@ -13,11 +13,11 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "user_ratings",
+@Table(name = "book_ratings",
         uniqueConstraints = @UniqueConstraint(columnNames =
                 {"user_id", "book_id"}))
 @Data
-public class UserRating {
+public class BookRating {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
