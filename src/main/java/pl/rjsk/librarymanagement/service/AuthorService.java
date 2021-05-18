@@ -10,7 +10,9 @@ import pl.rjsk.librarymanagement.model.dto.AuthorDto;
 import pl.rjsk.librarymanagement.model.entity.Author;
 import pl.rjsk.librarymanagement.repository.AuthorRepository;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,5 +44,13 @@ public class AuthorService {
         Author author = authorRepository.save(authorMapper.mapToEntity(authorDto));
 
         return authorMapper.mapToDto(author);
+    }
+
+    @Transactional
+    public List<AuthorDto> saveAll(Collection<AuthorDto> authorDtos) {
+        List<Author> authors = authorDtos.stream()
+                .map(authorMapper::mapToEntity)
+                .collect(Collectors.toList());
+        return authorMapper.mapAsList(authorRepository.saveAll(authors));
     }
 }

@@ -2,11 +2,14 @@ package pl.rjsk.librarymanagement.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
@@ -21,7 +24,12 @@ import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
 import pl.rjsk.librarymanagement.repository.KeywordRepository;
 
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,6 +44,21 @@ public class BookService {
     private final BookHistoryRepository bookHistoryRepository;
     private final BookMapper bookMapper;
     private final KeywordRepository keywordRepository;
+    private final Set<String> keywordStopWords = new HashSet<>();
+
+    @Value("${keywords.stopwords.filename}")
+    private String keywordsStopWordsFilename;
+
+    @PostConstruct
+    private void loadKeywordStopWordsFromFile() {
+        try {
+            File file = ResourceUtils.getFile(keywordsStopWordsFilename);
+            List<String> lines = Files.readAllLines(file.toPath());
+            keywordStopWords.addAll(lines);
+        } catch (IOException ex) {
+            log.error("Exception: ", ex);
+        }
+    }
 
     @Transactional
     public BookWithKeywordsDto save(BookWithKeywordsDto bookDto) {
@@ -57,8 +80,10 @@ public class BookService {
     }
 
     private void updateBookByBookDto(BookWithKeywordsDto bookDto, Book bookToUpdate) {
-        Set<Keyword> keywords = prepareKeywords(bookDto.getKeywords());
+        Set<Keyword> keywords = prepareKeywords(bookDto.getKeywords(), bookDto.getDescription());
         Set<Author> authors = bookDto.getAuthorsIds().stream().map(Author::new).collect(Collectors.toSet());
+
+        keywords.forEach(k -> log.info(k.getName()));
 
         bookToUpdate.setTitle(bookDto.getTitle());
         bookToUpdate.setAuthors(authors);
@@ -68,10 +93,16 @@ public class BookService {
         bookToUpdate.setKeywords(keywords);
     }
 
-    private Set<Keyword> prepareKeywords(String keywords) {
-        Set<String> keywordNames = Arrays.stream(keywords.split("\\s*,\\s*"))
-                .map(String::toLowerCase)
-                .collect(Collectors.toSet());
+    private Set<Keyword> prepareKeywords(String keywords, String description) {
+        Set<String> keywordNames;
+        if (!StringUtils.hasLength(keywords) && description != null) {
+            keywordNames = getKeywordsFromDesc(description);
+        } else {
+            keywordNames = Arrays.stream(keywords.split("\\s*,\\s*"))
+                    .map(String::toLowerCase)
+                    .collect(Collectors.toSet());
+        }
+
         Set<Keyword> existingKeywords = keywordRepository.findAllByNameIn(keywordNames);
         Set<String> existingKeywordNames = existingKeywords
                 .stream()
@@ -86,6 +117,20 @@ public class BookService {
         parsedKeywords.addAll(existingKeywords);
 
         return parsedKeywords;
+    }
+
+    private Set<String> getKeywordsFromDesc(String description) {
+        return Arrays.stream(description.toLowerCase()
+                .trim()
+                .replaceAll(" +", " ")
+                .chars()
+                .mapToObj(c -> (char) c)
+                .filter(c -> Character.isAlphabetic(c) || (c == ' '))
+                .map(String::valueOf)
+                .collect(Collectors.joining())
+                .split(" "))
+                .filter(w -> !keywordStopWords.contains(w))
+                .collect(Collectors.toSet());
     }
 
     @Transactional

@@ -21,6 +21,11 @@ public class GenreService {
         return genreRepository.findAll();
     }
 
+    public Genre getById(long id) {
+        return genreRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Unable to get genre with given id: " + id));
+    }
+
     @Transactional
     public void delete(long id) {
         Genre genre = genreRepository.findById(id)
