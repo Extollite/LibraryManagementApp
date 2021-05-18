@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GoogleBooksMapper {
-    
+
     public static BookDto mapVolumeToBook(Volume volume, long categoryId) {
         BookDto bookWithKeywordsDto = new BookDto();
         Volume.VolumeInfo volumeInfo = volume.getVolumeInfo();
@@ -63,7 +63,8 @@ public class GoogleBooksMapper {
 
     public static BookCopyDueDateDto mapToBookCopyDueDateDto(Volume volume, BookWithKeywordsDto bookWithKeywordsDto) {
         Volume.VolumeInfo volInfo = volume.getVolumeInfo();
-        int releaseYear = Integer.parseInt(volInfo.getPublishedDate().substring(0, 4));
+        String publishedDate = volInfo.getPublishedDate();
+        int releaseYear = publishedDate != null ? Integer.parseInt(publishedDate.substring(0, 4)) : 0;
         String publisher = volInfo.getPublisher() == null ? "unknown" : volInfo.getPublisher();
         BookCopyDueDateDto bookCopyDto = new BookCopyDueDateDto();
 
@@ -73,7 +74,7 @@ public class GoogleBooksMapper {
         bookCopyDto.setLanguageCode(volInfo.getLanguage());
         bookCopyDto.setPublisherName(publisher);
         bookCopyDto.setYearOfRelease(releaseYear);
-        bookCopyDto.setPagesCount(volInfo.getPageCount());
+        bookCopyDto.setPagesCount(volInfo.getPageCount() != null ? volInfo.getPageCount() : 0);
         bookCopyDto.setAvailable(true);
         bookCopyDto.setDueDate(null);
 

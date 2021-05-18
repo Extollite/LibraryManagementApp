@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class GoogleBooksSaver {
-    
+
     private final BookService bookService;
     private final BookCopyService bookCopyService;
     private final AuthorService authorService;

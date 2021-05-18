@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/debug")
 public class DebugController {
-    
+
     private final GoogleBooksSaver googleBooksSaver;
     private final GenreService genreService;
 
