@@ -57,6 +57,7 @@ public class BookService {
             keywordStopWords.addAll(lines);
         } catch (IOException ex) {
             ex.printStackTrace();
+            log.error("Error: ", ex);
         }
     }
 

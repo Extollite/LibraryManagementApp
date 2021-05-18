@@ -15,6 +15,7 @@ import pl.rjsk.librarymanagement.service.AuthorService;
 import pl.rjsk.librarymanagement.service.BookCopyService;
 import pl.rjsk.librarymanagement.service.BookService;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,8 +41,7 @@ public class GoogleBooksSaver {
     private void processVolume(Volume volume, Genre genre) {
         BookDto bookDto = GoogleBooksMapper.mapVolumeToBook(volume, genre.getId());
 
-        saveNewAuthors(bookDto.getAuthors());
-        Set<Long> authorsIds = getAuthorIds(bookDto.getAuthors());
+        Set<Long> authorsIds = saveNewAuthors(bookDto.getAuthors());
 
         BookWithKeywordsDto bookWithKeywordsDto = GoogleBooksMapper.mapToBookWithKeywordsDto(bookDto, authorsIds);
         BookWithKeywordsDto savedBook = saveNewBook(bookWithKeywordsDto);
@@ -49,30 +49,31 @@ public class GoogleBooksSaver {
         saveNewCopy(volume, savedBook);
     }
 
-    private void saveNewAuthors(List<AuthorDto> newAuthors) {
+    private Set<Long> saveNewAuthors(List<AuthorDto> authors) {
         List<AuthorDto> currentAuthors = authorService.getAllAuthors().stream()
                 .map(authorMapper::mapToDto)
                 .collect(Collectors.toList());
 
-        newAuthors.stream()
-                .distinct()
+        List<AuthorDto> newAuthors = authors.stream()
                 .filter(a -> !currentAuthors.contains(a))
-                .forEach(authorService::save);
+                .collect(Collectors.toList());
+
+        Set<Long> authorsIds = authorService.saveAll(newAuthors).stream()
+                .map(AuthorDto::getId)
+                .collect(Collectors.toSet());
+        
+        authors.forEach(author -> {
+            currentAuthors.stream()
+                    .filter(curr -> curr.equals(author))
+                    .map(AuthorDto::getId)
+                    .forEach(authorsIds::add);
+        });
+        
+        return authorsIds;
     }
 
     private BookWithKeywordsDto saveNewBook(BookWithKeywordsDto bookWithKeywordsDto) {
         return bookService.save(bookWithKeywordsDto);
-    }
-
-
-    private Set<Long> getAuthorIds(List<AuthorDto> authorsDtos) {
-        return authorsDtos.stream()
-                .map(authorDto -> {
-                    Author author =
-                            authorService.getByFirstLastName(authorDto.getFirstName(), authorDto.getLastName());
-                    return author.getId();
-                })
-                .collect(Collectors.toSet());
     }
 
     private void saveNewCopy(Volume volume, BookWithKeywordsDto bookWithKeywordsDto) {

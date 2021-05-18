@@ -7,13 +7,14 @@ import com.google.api.services.books.v1.Books;
 import com.google.api.services.books.v1.BooksRequestInitializer;
 import com.google.api.services.books.v1.model.Volume;
 import com.google.api.services.books.v1.model.Volumes;
+import lombok.extern.slf4j.Slf4j;
 import pl.rjsk.librarymanagement.model.entity.Genre;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 public class GoogleBooksFetcher {
 
     private final static String API_KEY = "AIzaSyD3vKbaBMG_t_mfEzTpJt2_GmqR3Nu8LCs";
@@ -32,12 +33,10 @@ public class GoogleBooksFetcher {
 
         Volumes volumes = volumesList.execute();
 
-
         for (var volume : volumes.getItems()) {
 
             var volumeInfo = volume.getVolumeInfo();
-            System.out.println(volumeInfo.getTitle());
-            System.out.println();
+            log.info(volumeInfo.getTitle());
         }
 
         return volumes.getItems().stream()
@@ -55,8 +54,8 @@ public class GoogleBooksFetcher {
 
         try {
             return queryGoogleBooks(jsonFactory, query, genreId);
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+        } catch (Exception ex) {
+            log.error("Error: ", ex);
         }
 
         return Collections.emptyList();
