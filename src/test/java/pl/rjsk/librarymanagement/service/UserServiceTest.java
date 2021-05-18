@@ -29,7 +29,7 @@ class UserServiceTest {
 
     private static final long USER_ID = 1L;
     private static final String PESEL = "pesel";
-    private static final String PASSWORD = "passwd";
+    private static final String PASSWORD = "password";
 
     @Mock
     private UserRepository userRepository;
@@ -77,7 +77,7 @@ class UserServiceTest {
 
         assertThatThrownBy(() -> userService.save(user))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Password cannot be empty!");
+                .hasMessage("Password must contain at least 5 characters");
 
         verifyNoInteractions(userRepository, passwordEncoder);
     }
@@ -123,5 +123,49 @@ class UserServiceTest {
         verify(userRepository).findByPesel(eq(PESEL));
         verify(passwordEncoder).encode(eq(PASSWORD));
         verify(userRepository).save(eq(user));
+    }
+
+    @ParameterizedTest
+    @MethodSource("saveEmptyPasswordProvider")
+    void updatePassword_emptyPassword(String password) {
+
+        assertThatThrownBy(() -> userService.updatePassword(PESEL, password))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Password must contain at least 5 characters");
+
+        verifyNoInteractions(userRepository, passwordEncoder);
+    }
+
+    @Test
+    void updatePassword_peselExists() {
+        when(userRepository.findByPesel(anyString())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.updatePassword(PESEL, PASSWORD))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Unable to fetch user with given pesel: " + PESEL);
+
+        verify(userRepository).findByPesel(eq(PESEL));
+        verifyNoInteractions(passwordEncoder);
+    }
+
+    @Test
+    void updatePassword() {
+        var user = new User();
+        user.setPesel(PESEL);
+        user.setPassword("pass");
+
+        when(userRepository.findByPesel(anyString())).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode(anyString()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        User result = userService.updatePassword(PESEL, PASSWORD);
+
+        assertThat(result)
+                .isNotNull()
+                .extracting("pesel", "password")
+                .containsExactly(PESEL, PASSWORD);
+
+        verify(userRepository).findByPesel(eq(PESEL));
+        verify(passwordEncoder).encode(eq(PASSWORD));
     }
 }

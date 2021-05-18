@@ -47,6 +47,7 @@ public class BookService {
         return bookMapper.mapToDtoWithKeywords(book);
     }
 
+    //TODO: test logic
     @Transactional
     public void updateBook(BookWithKeywordsDto bookDto) {
         var bookToUpdate = bookRepository.findById(bookDto.getId())
