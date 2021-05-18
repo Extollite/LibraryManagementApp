@@ -124,4 +124,48 @@ class UserServiceTest {
         verify(passwordEncoder).encode(eq(PASSWORD));
         verify(userRepository).save(eq(user));
     }
+
+    @ParameterizedTest
+    @MethodSource("saveEmptyPasswordProvider")
+    void update_emptyPassword(String password) {
+
+        assertThatThrownBy(() -> userService.updatePassword(PESEL, password))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Password cannot be empty!");
+
+        verifyNoInteractions(userRepository, passwordEncoder);
+    }
+
+    @Test
+    void update_peselExists() {
+        when(userRepository.findByPesel(anyString())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.updatePassword(PESEL, PASSWORD))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Unable to fetch user with given pesel: " + PESEL);
+
+        verify(userRepository).findByPesel(eq(PESEL));
+        verifyNoInteractions(passwordEncoder);
+    }
+
+    @Test
+    void update() {
+        var user = new User();
+        user.setPesel(PESEL);
+        user.setPassword("pass");
+
+        when(userRepository.findByPesel(anyString())).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode(anyString()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        User result = userService.updatePassword(PESEL, PASSWORD);
+
+        assertThat(result)
+                .isNotNull()
+                .extracting("pesel", "password")
+                .containsExactly(PESEL, PASSWORD);
+
+        verify(userRepository).findByPesel(eq(PESEL));
+        verify(passwordEncoder).encode(eq(PASSWORD));
+    }
 }
