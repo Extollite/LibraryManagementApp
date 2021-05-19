@@ -1,6 +1,7 @@
 package pl.rjsk.librarymanagement.security.data;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(staticName = "of")
 @ToString
 @EqualsAndHashCode
+@Getter
 public class LibraryUserDetails implements UserDetails {
 
     private final User libraryUser;

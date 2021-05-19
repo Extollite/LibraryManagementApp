@@ -8,6 +8,7 @@ import com.google.api.services.books.v1.BooksRequestInitializer;
 import com.google.api.services.books.v1.model.Volume;
 import com.google.api.services.books.v1.model.Volumes;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 import pl.rjsk.librarymanagement.model.entity.Genre;
 
 import java.util.Collections;
@@ -29,7 +30,7 @@ public class GoogleBooksFetcher {
         Books.Volumes.List volumesList = books.volumes().list(query);
         volumesList.setPrintType("books");
         volumesList.setLangRestrict("en");
-        volumesList.setMaxResults(40L);
+        volumesList.setMaxResults(10L);
 
         Volumes volumes = volumesList.execute();
 
@@ -39,8 +40,9 @@ public class GoogleBooksFetcher {
             log.info(volumeInfo.getTitle());
         }
 
-        return volumes.getItems().stream()
-                .filter(v -> !v.getVolumeInfo().getAuthors().isEmpty())
+        return volumes.getItems()
+                .stream()
+                .filter(v -> !CollectionUtils.isEmpty(v.getVolumeInfo().getAuthors()))
                 .collect(Collectors.toList());
     }
 
