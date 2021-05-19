@@ -7,22 +7,27 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.rjsk.librarymanagement.mapper.BookMapper;
+import pl.rjsk.librarymanagement.mapper.BookRatingMapper;
+import pl.rjsk.librarymanagement.model.dto.BookRatingDto;
+import pl.rjsk.librarymanagement.model.dto.BookWithRatingDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.model.entity.BookRating;
 import pl.rjsk.librarymanagement.model.entity.User;
 import pl.rjsk.librarymanagement.repository.BookRatingRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
-import pl.rjsk.librarymanagement.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,55 +44,47 @@ public class BookRatingServiceTest {
     private BookRepository bookRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private BookRatingMapper bookRatingMapper;
+
+    @Mock
+    private BookMapper bookMapper;
 
     @InjectMocks
     private BookRatingService bookRatingService;
-
-    @Test
-    void updateOrSave_userException() {
-        int rating = 5;
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> bookRatingService.updateOrSave(USER_ID, BOOK_ID, rating))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Unable to fetch user with given id: " + USER_ID);
-
-        verify(userRepository).findById(eq(USER_ID));
-    }
 
     @Test
     void updateOrSave_bookException() {
         int rating = 5;
         User user = new User();
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> bookRatingService.updateOrSave(USER_ID, BOOK_ID, rating))
+        assertThatThrownBy(() -> bookRatingService.updateOrSave(user, BOOK_ID, rating))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Unable to fetch book with given id: " + BOOK_ID);
 
-        verify(userRepository).findById(eq(USER_ID));
         verify(bookRepository).findById(eq(BOOK_ID));
+        verifyNoInteractions(bookMapper);
+        verifyNoInteractions(bookRatingMapper);
+        verifyNoInteractions(bookRatingRepository);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, 11, 12})
-    void updateOrSave_ratingTooLowException(int rating) {
+    void updateOrSave_ratingValueException(int rating) {
         User user = new User();
         Book book = new Book();
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
 
-        assertThatThrownBy(() -> bookRatingService.updateOrSave(USER_ID, BOOK_ID, rating))
+        assertThatThrownBy(() -> bookRatingService.updateOrSave(user, BOOK_ID, rating))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Book rating must be within 1-10 range. Rating " + rating + " is not");
 
-        verify(userRepository).findById(eq(USER_ID));
         verify(bookRepository).findById(eq(BOOK_ID));
+        verifyNoInteractions(bookMapper);
+        verifyNoInteractions(bookRatingMapper);
+        verifyNoInteractions(bookRatingRepository);
     }
 
     @Test
@@ -107,21 +104,34 @@ public class BookRatingServiceTest {
         bookRating.setBook(book);
         bookRating.setRating(oldRating);
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
-        when(bookRatingRepository.findBookRatingByBookAndUser(any(Book.class), any(User.class)))
-                .thenReturn(Optional.of(bookRating));
+        BookRating newBookRating = new BookRating();
+        newBookRating.setId(BOOK_RATING_ID);
+        newBookRating.setUser(user);
+        newBookRating.setBook(book);
+        newBookRating.setRating(newRating);
 
-        BookRating result = bookRatingService.updateOrSave(USER_ID, BOOK_ID, newRating);
+        BookRatingDto bookRatingDto = new BookRatingDto();
+        bookRatingDto.setId(BOOK_RATING_ID);
+        bookRatingDto.setUserId(USER_ID);
+        bookRatingDto.setBookId(BOOK_ID);
+        bookRatingDto.setRating(newRating);
+
+        when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
+        when(bookRatingRepository.findBookRatingByUserAndBook(any(User.class), any(Book.class)))
+                .thenReturn(Optional.of(bookRating));
+        when(bookRatingMapper.mapToDto(any(BookRating.class))).thenReturn(bookRatingDto);
+
+        BookRatingDto result = bookRatingService.updateOrSave(user, BOOK_ID, newRating);
 
         assertThat(result)
                 .isNotNull()
-                .extracting("user", "book", "rating")
-                .containsExactly(user, book, newRating);
+                .extracting("userId", "bookId", "rating")
+                .containsExactly(USER_ID, BOOK_ID, newRating);
 
-        verify(userRepository).findById(eq(USER_ID));
         verify(bookRepository).findById(eq(BOOK_ID));
-        verify(bookRatingRepository).findBookRatingByBookAndUser(eq(book), eq(user));
+        verify(bookRatingRepository).findBookRatingByUserAndBook(eq(user), eq(book));
+        verify(bookRatingMapper).mapToDto(eq(newBookRating));
+        verifyNoInteractions(bookMapper);
     }
 
     @Test
@@ -139,62 +149,63 @@ public class BookRatingServiceTest {
         bookRating.setBook(book);
         bookRating.setRating(rating);
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        BookRatingDto bookRatingDto = new BookRatingDto();
+        bookRatingDto.setUserId(USER_ID);
+        bookRatingDto.setBookId(BOOK_ID);
+        bookRatingDto.setRating(rating);
+
         when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
-        when(bookRatingRepository.findBookRatingByBookAndUser(any(Book.class), any(User.class)))
+        when(bookRatingRepository.findBookRatingByUserAndBook(any(User.class), any(Book.class)))
                 .thenReturn(Optional.empty());
         when(bookRatingRepository.save(any(BookRating.class))).thenReturn(bookRating);
+        when(bookRatingMapper.mapToDto(any(BookRating.class))).thenReturn(bookRatingDto);
 
-        BookRating result = bookRatingService.updateOrSave(USER_ID, BOOK_ID, rating);
+        BookRatingDto result = bookRatingService.updateOrSave(user, BOOK_ID, rating);
 
         assertThat(result)
                 .isNotNull()
-                .extracting("user", "book", "rating")
-                .containsExactly(user, book, rating);
+                .extracting("userId", "bookId", "rating")
+                .containsExactly(USER_ID, BOOK_ID, rating);
 
-        verify(userRepository).findById(eq(USER_ID));
         verify(bookRepository).findById(eq(BOOK_ID));
-        verify(bookRatingRepository).findBookRatingByBookAndUser(eq(book), eq(user));
+        verify(bookRatingRepository).findBookRatingByUserAndBook(eq(user), eq(book));
         verify(bookRatingRepository).save(eq(bookRating));
-    }
-
-    @Test
-    void testGetAll_userException() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> bookRatingService.getAll(USER_ID))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Unable to fetch user with given id: " + USER_ID);
-
-        verify(userRepository).findById(eq(USER_ID));
+        verifyNoInteractions(bookMapper);
     }
 
     @Test
     void testGetAll() {
+        int rating = 9;
+
         User user = new User();
         user.setId(USER_ID);
 
-        User otherUser = new User();
-        otherUser.setId(USER_ID + 1);
+        Book book = new Book();
+        book.setId(BOOK_ID);
 
         BookRating bookRatingByUser = new BookRating();
         bookRatingByUser.setUser(user);
-        
-        BookRating bookRatingByOtherUser = new BookRating();
-        bookRatingByOtherUser.setUser(otherUser);
+        bookRatingByUser.setBook(book);
+        bookRatingByUser.setRating(rating);
 
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
-        when(bookRatingRepository.findAll())
-                .thenReturn(List.of(bookRatingByUser, bookRatingByOtherUser));
+        BookWithRatingDto bookWithRatingDto = new BookWithRatingDto();
+        bookWithRatingDto.setId(BOOK_ID);
+        bookWithRatingDto.setRating(rating);
 
-        List<BookRating> result = bookRatingService.getAll(USER_ID);
+        when(bookRatingRepository.findAllByUser(any(User.class))).thenReturn(List.of(bookRatingByUser));
+        when(bookMapper.mapToBookWithRating(any(Book.class))).thenReturn(bookWithRatingDto);
+
+        List<BookWithRatingDto> result = bookRatingService.getAll(user);
 
         assertThat(result)
                 .hasSize(1)
-                .extracting("user")
-                .containsExactly(user);
+                .extracting("id", "rating")
+                .containsExactly(tuple(BOOK_ID, rating));
 
 
-        verify(bookRatingRepository).findAll();
+        verify(bookRatingRepository).findAllByUser(eq(user));
+        verify(bookMapper).mapToBookWithRating(eq(book));
+        verifyNoInteractions(bookRepository);
+        verifyNoInteractions(bookRatingMapper);
     }
 }

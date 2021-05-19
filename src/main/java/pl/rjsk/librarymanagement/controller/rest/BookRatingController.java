@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import pl.rjsk.librarymanagement.model.entity.BookRating;
+import pl.rjsk.librarymanagement.model.dto.BookRatingDto;
+import pl.rjsk.librarymanagement.model.dto.BookWithRatingDto;
+import pl.rjsk.librarymanagement.model.entity.User;
 import pl.rjsk.librarymanagement.security.data.LibraryUserDetails;
 import pl.rjsk.librarymanagement.service.BookRatingService;
 
@@ -21,21 +23,31 @@ public class BookRatingController {
     private final BookRatingService bookRatingService;
 
     @PostMapping("/add")
-    public void updateBookRating(
+    public BookRatingDto updateBookRating(
             Authentication auth,
             @RequestParam long bookId,
             @RequestParam int rating) {
-        var user = (LibraryUserDetails) auth.getPrincipal();
-        long userId = user.getLibraryUser().getId();
+        var userInfo = (LibraryUserDetails) auth.getPrincipal();
+        User user = userInfo.getLibraryUser();
 
-        bookRatingService.updateOrSave(userId, bookId, rating);
+        return bookRatingService.updateOrSave(user, bookId, rating);
+    }
+
+    @GetMapping("/get")
+    public BookRatingDto get(
+            Authentication auth,
+            @RequestParam long bookId) {
+        var userDetails = (LibraryUserDetails) auth.getPrincipal();
+        User user = userDetails.getLibraryUser();
+
+        return bookRatingService.get(user, bookId);
     }
 
     @GetMapping("/getAll")
-    public List<BookRating> getAll(Authentication auth) {
-        var user = (LibraryUserDetails) auth.getPrincipal();
-        long userId = user.getLibraryUser().getId();
+    public List<BookWithRatingDto> getAll(Authentication auth) {
+        var userDetails = (LibraryUserDetails) auth.getPrincipal();
+        User user = userDetails.getLibraryUser();
 
-        return bookRatingService.getAll(userId);
+        return bookRatingService.getAll(user);
     }
 }

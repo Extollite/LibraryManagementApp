@@ -6,5 +6,5 @@ import pl.rjsk.librarymanagement.model.entity.Author;
 
 @Repository
 public interface AuthorRepository extends JpaRepository<Author, Long> {
-    
+
 }

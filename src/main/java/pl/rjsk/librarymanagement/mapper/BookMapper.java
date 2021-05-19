@@ -7,6 +7,7 @@ import org.mapstruct.Named;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithKeywordsDto;
+import pl.rjsk.librarymanagement.model.dto.BookWithRatingDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.model.entity.Keyword;
 
@@ -39,6 +40,13 @@ public interface BookMapper {
             @Mapping(target = "authorsIds", source = "authors", qualifiedByName = "getAuthorsIds")
     })
     BookWithKeywordsDto mapToDtoWithKeywords(Book book);
+
+    @Mappings({
+            @Mapping(target = "genreId", source = "genre.id"),
+            @Mapping(target = "rating", ignore = true),
+            @Mapping(target = "authorsIds", source = "authors", qualifiedByName = "getAuthorsIds")
+    })
+    BookWithRatingDto mapToBookWithRating(Book book);
 
     @Named("joinKeywords")
     default String joinKeywords(Set<Keyword> keywords) {

@@ -3,15 +3,17 @@ package pl.rjsk.librarymanagement.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.rjsk.librarymanagement.mapper.BookMapper;
+import pl.rjsk.librarymanagement.mapper.BookRatingMapper;
+import pl.rjsk.librarymanagement.model.dto.BookRatingDto;
+import pl.rjsk.librarymanagement.model.dto.BookWithRatingDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.model.entity.BookRating;
 import pl.rjsk.librarymanagement.model.entity.User;
 import pl.rjsk.librarymanagement.repository.BookRatingRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
-import pl.rjsk.librarymanagement.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,43 +21,54 @@ import java.util.stream.Collectors;
 public class BookRatingService {
 
     private final BookRatingRepository bookRatingRepository;
+    private final BookRatingMapper bookRatingMapper;
+    private final BookMapper bookMapper;
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
+
 
     @Transactional
-    public BookRating updateOrSave(long userId, long bookId, int rating) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch user with given id: " + userId));
+    public BookRatingDto updateOrSave(User user, long bookId, int rating) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + bookId));
         if (rating < 1 || 10 < rating) {
             throw new IllegalArgumentException("Book rating must be within 1-10 range. Rating " + rating + " is not");
         }
 
-        BookRating bookRating;
-        Optional<BookRating> bookRatingOptional = bookRatingRepository.findBookRatingByBookAndUser(book, user);
+        BookRating bookRating = bookRatingRepository.findBookRatingByUserAndBook(user, book)
+                .map(br -> br.setRating(rating))
+                .orElse(save(user, book, rating));
 
-        if (bookRatingOptional.isPresent()) {
-            bookRating = bookRatingOptional.get();
-            bookRating.setRating(rating);
+        return bookRatingMapper.mapToDto(bookRating);
+    }
 
-            return bookRating;
-        }
-
-        bookRating = new BookRating();
-        bookRating.setUser(user);
+    private BookRating save(User user, Book book, int rating) {
+        BookRating bookRating = new BookRating();
         bookRating.setBook(book);
+        bookRating.setUser(user);
         bookRating.setRating(rating);
+
         return bookRatingRepository.save(bookRating);
     }
 
-    public List<BookRating> getAll(long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch user with given id: " + userId));
+    public BookRatingDto get(User user, long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + bookId));
 
-        List<BookRating> allRatings = bookRatingRepository.findAll();
-        return allRatings.stream()
-                .filter(br -> br.getUser().equals(user))
+        BookRating bookRating = bookRatingRepository.findBookRatingByUserAndBook(user, book)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Unable to fetch rating for userId: " + user.getId() + ", bookId: " + bookId));
+
+        return bookRatingMapper.mapToDto(bookRating);
+    }
+
+    public List<BookWithRatingDto> getAll(User user) {
+        List<BookRating> bookRatings = bookRatingRepository.findAllByUser(user);
+        return bookRatings.stream()
+                .map(br -> {
+                    BookWithRatingDto bookWithRatingDto = bookMapper.mapToBookWithRating(br.getBook());
+                    bookWithRatingDto.setRating(br.getRating());
+                    return bookWithRatingDto;
+                })
                 .collect(Collectors.toList());
     }
 }

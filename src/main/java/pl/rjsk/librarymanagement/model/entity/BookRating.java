@@ -1,6 +1,8 @@
 package pl.rjsk.librarymanagement.model.entity;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,5 +35,11 @@ public class BookRating {
     private User user;
 
     @Column(nullable = false)
+    @Setter(AccessLevel.NONE)
     private Integer rating;
+
+    public BookRating setRating(int rating) {
+        this.rating = rating;
+        return this;
+    }
 }
