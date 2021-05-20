@@ -244,7 +244,7 @@ public class BookRatingServiceTest {
                 .extracting("userId", "bookId", "rating")
                 .containsExactly(USER_ID, BOOK_ID, rating);
         
-        verify(bookRepository).findById(BOOK_ID);
+        verify(bookRepository).findById(eq(BOOK_ID));
         verify(bookRatingRepository).findBookRatingByUserAndBook(eq(user), eq(book));
         verify(bookRatingMapper).mapToDto(eq(bookRating));
         verifyNoInteractions(bookMapper);
