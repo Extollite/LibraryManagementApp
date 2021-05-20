@@ -55,10 +55,9 @@ public class BookRatingService {
                 .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + bookId));
 
         BookRating bookRating = bookRatingRepository.findBookRatingByUserAndBook(user, book)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Unable to fetch rating for userId: " + user.getId() + ", bookId: " + bookId));
+                .orElse(null);
 
-        return bookRatingMapper.mapToDto(bookRating);
+        return bookRating == null ? null : bookRatingMapper.mapToDto(bookRating);
     }
 
     public List<BookWithRatingDto> getAll(User user) {
