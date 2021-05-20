@@ -174,7 +174,7 @@ public class BookRatingServiceTest {
     }
     
     @Test
-    void testGet_bookException() {
+    void get_bookException() {
         User user = new User();
         
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -183,14 +183,14 @@ public class BookRatingServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Unable to fetch book with given id: " + BOOK_ID);
         
-        verify(bookRepository).findById(BOOK_ID);
+        verify(bookRepository).findById(eq(BOOK_ID));
         verifyNoInteractions(bookMapper);
         verifyNoInteractions(bookRatingMapper);
         verifyNoInteractions(bookRatingRepository);
     }
     
     @Test
-    void testGet_noRatingYet() {
+    void get_noRatingYet() {
         User user = new User();
         user.setId(USER_ID);
         
@@ -206,14 +206,14 @@ public class BookRatingServiceTest {
         assertThat(result)
                 .isNull();
         
-        verify(bookRepository).findById(BOOK_ID);
+        verify(bookRepository).findById(eq(BOOK_ID));
         verify(bookRatingRepository).findBookRatingByUserAndBook(eq(user), eq(book));
         verifyNoInteractions(bookMapper);
         verifyNoInteractions(bookRatingMapper);
     }
     
     @Test
-    void testGet() {
+    void get() {
         User user = new User();
         user.setId(USER_ID);
         
@@ -248,11 +248,10 @@ public class BookRatingServiceTest {
         verify(bookRatingRepository).findBookRatingByUserAndBook(eq(user), eq(book));
         verify(bookRatingMapper).mapToDto(eq(bookRating));
         verifyNoInteractions(bookMapper);
-        
     }
 
     @Test
-    void testGetAll() {
+    void getAll() {
         int rating = 9;
 
         User user = new User();
