@@ -36,7 +36,7 @@ public class BookRatingService {
 
         BookRating bookRating = bookRatingRepository.findBookRatingByUserAndBook(user, book)
                 .map(br -> br.setRating(rating))
-                .orElse(save(user, book, rating));
+                .orElseGet(() -> save(user, book, rating));
 
         return bookRatingMapper.mapToDto(bookRating);
     }

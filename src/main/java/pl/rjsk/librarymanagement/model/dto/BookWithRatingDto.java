@@ -2,13 +2,14 @@ package pl.rjsk.librarymanagement.model.dto;
 
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 public class BookWithRatingDto {
+
     private long id;
     private String title;
-    private Set<Long> authorsIds;
+    private List<AuthorDto> authors;
     private long genreId;
     private int yearOfFirstRelease;
     private String description;
