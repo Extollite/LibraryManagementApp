@@ -43,8 +43,7 @@ public interface BookMapper {
 
     @Mappings({
             @Mapping(target = "genreId", source = "genre.id"),
-            @Mapping(target = "rating", ignore = true),
-            @Mapping(target = "authorsIds", source = "authors", qualifiedByName = "getAuthorsIds")
+            @Mapping(target = "rating", ignore = true)
     })
     BookWithRatingDto mapToBookWithRating(Book book);
 
