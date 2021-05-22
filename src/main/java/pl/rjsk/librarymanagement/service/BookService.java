@@ -80,10 +80,11 @@ public class BookService {
     }
 
     private void updateBookByBookDto(BookWithKeywordsDto bookDto, Book bookToUpdate) {
-        Set<Keyword> keywords = prepareKeywords(bookDto.getKeywords(), bookDto.getDescription());
+        Set<Keyword> keywords = prepareKeywords(bookDto.getKeywords(),
+                bookDto.getDescription() + " " + bookDto.getTitle());
         Set<Author> authors = bookDto.getAuthorsIds().stream().map(Author::new).collect(Collectors.toSet());
 
-        keywords.forEach(k -> log.info(k.getName()));
+        keywords.forEach(k -> log.trace(k.getName()));
 
         bookToUpdate.setTitle(bookDto.getTitle());
         bookToUpdate.setAuthors(authors);

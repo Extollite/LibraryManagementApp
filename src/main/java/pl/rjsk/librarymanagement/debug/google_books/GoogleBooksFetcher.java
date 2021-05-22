@@ -30,7 +30,7 @@ public class GoogleBooksFetcher {
         Books.Volumes.List volumesList = books.volumes().list(query);
         volumesList.setPrintType("books");
         volumesList.setLangRestrict("en");
-        volumesList.setMaxResults(10L);
+        volumesList.setMaxResults(20L);
 
         Volumes volumes = volumesList.execute();
 
