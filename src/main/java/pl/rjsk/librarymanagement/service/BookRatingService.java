@@ -71,7 +71,7 @@ public class BookRatingService {
                 .collect(Collectors.toList());
     }
 
-    public Long getRatingCount(User user) {
-        return bookRatingRepository.findAllByUser(user).stream().count();
+    public long getRatingCount(User user) {
+        return bookRatingRepository.findAllByUser(user).size();
     }
 }
