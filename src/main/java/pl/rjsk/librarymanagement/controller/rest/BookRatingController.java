@@ -12,6 +12,7 @@ import pl.rjsk.librarymanagement.model.dto.BookWithRatingDto;
 import pl.rjsk.librarymanagement.model.entity.User;
 import pl.rjsk.librarymanagement.security.data.LibraryUserDetails;
 import pl.rjsk.librarymanagement.service.BookRatingService;
+import pl.rjsk.librarymanagement.service.BookRecommendationService;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ import java.util.List;
 public class BookRatingController {
 
     private final BookRatingService bookRatingService;
+    private final BookRecommendationService bookRecommendationService;
 
     @PostMapping("/add")
     public BookRatingDto updateBookRating(
@@ -30,7 +32,11 @@ public class BookRatingController {
         var userInfo = (LibraryUserDetails) auth.getPrincipal();
         User user = userInfo.getLibraryUser();
 
-        return bookRatingService.updateOrSave(user, bookId, rating);
+        BookRatingDto bookRating = bookRatingService.updateOrSave(user, bookId, rating);
+
+        bookRecommendationService.recalculateRecommendations(user);
+
+        return bookRating;
     }
 
     @GetMapping("/get")
