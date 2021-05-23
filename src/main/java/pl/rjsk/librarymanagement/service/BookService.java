@@ -65,7 +65,7 @@ public class BookService {
         Book newBook = new Book();
         updateBookByBookDto(bookDto, newBook);
 
-        var book = bookRepository.save(newBook);
+        Book book = bookRepository.save(newBook);
 
         return bookMapper.mapToDtoWithKeywords(book);
     }
@@ -103,6 +103,8 @@ public class BookService {
                     .map(String::toLowerCase)
                     .collect(Collectors.toSet());
         }
+
+        System.out.println(keywordNames);
 
         Set<Keyword> existingKeywords = keywordRepository.findAllByNameIn(keywordNames);
         Set<String> existingKeywordNames = existingKeywords
