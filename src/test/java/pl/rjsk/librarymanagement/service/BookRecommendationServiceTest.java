@@ -41,6 +41,8 @@ class BookRecommendationServiceTest {
     private BookRepository bookRepository;
     @Mock
     private BookRecommendationRepository bookRecommendationRepository;
+    @Mock
+    private BookService bookService;
 
     @InjectMocks
     private BookRecommendationService bookRecommendationService;
@@ -141,6 +143,7 @@ class BookRecommendationServiceTest {
         when(bookRecommendationRepository.getAllByUserOrderBySimilarityRatioDesc(any(User.class)))
                 .thenReturn(List.of(bookRecommendationB, bookRecommendationA));
         when(bookMapper.mapToDto(any(Book.class))).thenReturn(bookDtoB, bookDtoA);
+        when(bookService.addNumberOfAvailableCopiesToDto(any(BookDto.class))).thenReturn(bookDtoB, bookDtoA);
 
         List<BookDto> result = bookRecommendationService.getRecommendedBooks(user);
 
