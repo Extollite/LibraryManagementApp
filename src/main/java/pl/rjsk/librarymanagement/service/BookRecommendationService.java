@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
+import pl.rjsk.librarymanagement.model.entity.BookCopy;
 import pl.rjsk.librarymanagement.model.entity.BookRating;
 import pl.rjsk.librarymanagement.model.entity.BookRecommendation;
 import pl.rjsk.librarymanagement.model.entity.Keyword;
@@ -38,6 +39,7 @@ public class BookRecommendationService {
     private final BookRatingRepository bookRatingRepository;
     private final BookRepository bookRepository;
     private final BookRecommendationRepository bookRecommendationRepository;
+    private final BookService bookService;
 
     //Set default value for testing purposes
     @Value("${recommendation.rated.books.min-amount:20}")
@@ -106,6 +108,7 @@ public class BookRecommendationService {
          return bookRecommendationRepository.getAllByUserOrderBySimilarityRatioDesc(user).stream()
                 .map(BookRecommendation::getBook)
                 .map(bookMapper::mapToDto)
+                .map(bookService::addNumberOfAvailableCopiesToDto)
                 .collect(Collectors.toList());
     }
 
