@@ -62,7 +62,7 @@ class BookRecommendationServiceTest {
                 .isEmpty();
 
         verify(bookRatingRepository).findAllByUser(eq(user));
-        verifyNoInteractions(bookRepository, bookRecommendationRepository);
+        verifyNoInteractions(bookRepository, bookRecommendationRepository, bookService);
     }
 
     @Test
@@ -112,6 +112,7 @@ class BookRecommendationServiceTest {
         verify(bookRecommendationRepository).deleteAllByUser(eq(user));
         verify(bookRepository).findAllByIdNotIn(eq(Set.of(bookRating1stId, bookRating2ndId, bookRating3rdId)));
         verify(bookRecommendationRepository).saveAll(anyList());
+        verifyNoInteractions(bookService);
     }
 
     @Test
@@ -156,6 +157,8 @@ class BookRecommendationServiceTest {
         verify(bookRecommendationRepository).getAllByUserOrderBySimilarityRatioDesc(eq(user));
         verify(bookMapper).mapToDto(eq(bookB));
         verify(bookMapper).mapToDto(eq(bookA));
+        verify(bookService).addNumberOfAvailableCopiesToDto(eq(bookDtoB));
+        verify(bookService).addNumberOfAvailableCopiesToDto(eq(bookDtoA));
         verifyNoInteractions(bookRepository, bookRatingRepository);
     }
 
