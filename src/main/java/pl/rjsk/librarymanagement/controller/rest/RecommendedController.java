@@ -19,29 +19,29 @@ import java.util.List;
 @RequestMapping("/api/books/recommended")
 @RequiredArgsConstructor
 public class RecommendedController {
-    
+
     private final BookRecommendationService bookRecommendationService;
     private final BookRatingService bookRatingService;
-    
+
     @GetMapping("/count")
     public UserCurrentAndRequiredRatings getRatingCount(Authentication auth) {
         var userInfo = (LibraryUserDetails) auth.getPrincipal();
         User user = userInfo.getLibraryUser();
-        
+
         return new UserCurrentAndRequiredRatings(
                 bookRatingService.getRatingCount(user),
                 bookRecommendationService.getMinRatedBookToCalculate()
         );
     }
-    
+
     @GetMapping
     public List<BookDto> getRecommendedBooks(Authentication auth) {
         var userInfo = (LibraryUserDetails) auth.getPrincipal();
         User user = userInfo.getLibraryUser();
-        
+
         return bookRecommendationService.getRecommendedBooks(user);
     }
-    
+
     @Data
     @AllArgsConstructor
     private final static class UserCurrentAndRequiredRatings {

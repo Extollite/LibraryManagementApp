@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyIterable;
@@ -112,28 +111,28 @@ class BookRecommendationServiceTest {
         verify(bookRepository).findAllByIdNotIn(eq(Set.of(bookRating1stId, bookRating2ndId, bookRating3rdId)));
         verify(bookRecommendationRepository).saveAll(anyList());
     }
-    
+
     @Test
     void getRecommendedBooks() {
         User user = new User();
-        
+
         long bookIdA = 1L;
         long bookIdB = 2L;
-        
+
         Book bookA = new Book();
         Book bookB = new Book();
         BookDto bookDtoA = new BookDto();
         BookDto bookDtoB = new BookDto();
         BookRecommendation bookRecommendationA = new BookRecommendation();
         BookRecommendation bookRecommendationB = new BookRecommendation();
-        
+
         bookA.setId(bookIdA);
         bookB.setId(bookIdB);
         bookDtoA.setId(bookIdA);
         bookDtoB.setId(bookIdB);
         bookRecommendationA.setBook(bookA);
         bookRecommendationB.setBook(bookB);
-        
+
         when(bookRecommendationRepository.getAllByUser(any(User.class)))
                 .thenReturn(List.of(bookRecommendationA, bookRecommendationB));
         when(bookMapper.mapToDto(any(Book.class))).thenAnswer(invocation -> {
@@ -141,15 +140,15 @@ class BookRecommendationServiceTest {
             bookDto.setId(invocation.getArgument(0, Book.class).getId());
             return bookDto;
         });
-        
+
         List<BookDto> result = bookRecommendationService.getRecommendedBooks(user);
-        
+
         assertThat(result)
                 .isNotNull()
                 .hasSize(2)
                 .extracting("id")
                 .containsExactly(bookIdA, bookIdB);
-        
+
         verify(bookRecommendationRepository).getAllByUser(eq(user));
         verify(bookMapper).mapToDto(eq(bookA));
         verify(bookMapper).mapToDto(eq(bookB));

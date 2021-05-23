@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
-import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.model.entity.BookRating;
 import pl.rjsk.librarymanagement.model.entity.BookRecommendation;
@@ -102,7 +101,7 @@ public class BookRecommendationService {
 
         return bookRecommendationRepository.saveAll(bookRecommendations);
     }
-    
+
     public List<BookDto> getRecommendedBooks(User user) {
         List<BookRecommendation> recommendations = bookRecommendationRepository.getAllByUser(user);
         return recommendations.stream()
@@ -110,7 +109,7 @@ public class BookRecommendationService {
                 .map(bookMapper::mapToDto)
                 .collect(Collectors.toList());
     }
-    
+
     public long getMinRatedBookToCalculate() {
         return minRatedBookToCalculate;
     }

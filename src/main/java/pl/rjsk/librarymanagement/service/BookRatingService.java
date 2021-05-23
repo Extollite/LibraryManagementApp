@@ -14,7 +14,6 @@ import pl.rjsk.librarymanagement.repository.BookRatingRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,7 +70,7 @@ public class BookRatingService {
                 })
                 .collect(Collectors.toList());
     }
-    
+
     public Long getRatingCount(User user) {
         return bookRatingRepository.findAllByUser(user).stream().count();
     }
