@@ -103,9 +103,7 @@ public class BookRecommendationService {
     }
 
     public List<BookDto> getRecommendedBooks(User user) {
-        List<BookRecommendation> recommendations = bookRecommendationRepository.getAllByUser(user);
-        return recommendations.stream()
-                .sorted(Comparator.comparingDouble(BookRecommendation::getSimilarityRatio))
+         return bookRecommendationRepository.getAllByUserOrderBySimilarityRatioDesc(user).stream()
                 .map(BookRecommendation::getBook)
                 .map(bookMapper::mapToDto)
                 .collect(Collectors.toList());

@@ -9,6 +9,7 @@ import java.util.List;
 public interface BookRecommendationRepository extends JpaRepository<BookRecommendation, Long> {
 
     List<BookRecommendation> getAllByUser(User user);
+    List<BookRecommendation> getAllByUserOrderBySimilarityRatioDesc(User user);
 
     void deleteAllByUser(User user);
 }

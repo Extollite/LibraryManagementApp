@@ -118,6 +118,9 @@ class BookRecommendationServiceTest {
 
         long bookIdA = 1L;
         long bookIdB = 2L;
+        
+        double similarityRatioA = 0.75D;
+        double similarityRatioB = 0.8D;
 
         Book bookA = new Book();
         Book bookB = new Book();
@@ -132,10 +135,12 @@ class BookRecommendationServiceTest {
         bookDtoB.setId(bookIdB);
         bookRecommendationA.setBook(bookA);
         bookRecommendationB.setBook(bookB);
+        bookRecommendationA.setSimilarityRatio(similarityRatioA);
+        bookRecommendationB.setSimilarityRatio(similarityRatioB);
 
-        when(bookRecommendationRepository.getAllByUser(any(User.class)))
-                .thenReturn(List.of(bookRecommendationA, bookRecommendationB));
-        when(bookMapper.mapToDto(any(Book.class))).thenReturn(bookDtoA, bookDtoB);
+        when(bookRecommendationRepository.getAllByUserOrderBySimilarityRatioDesc(any(User.class)))
+                .thenReturn(List.of(bookRecommendationB, bookRecommendationA));
+        when(bookMapper.mapToDto(any(Book.class))).thenReturn(bookDtoB, bookDtoA);
 
         List<BookDto> result = bookRecommendationService.getRecommendedBooks(user);
 
@@ -143,11 +148,11 @@ class BookRecommendationServiceTest {
                 .isNotNull()
                 .hasSize(2)
                 .extracting("id")
-                .containsExactly(bookIdA, bookIdB);
+                .containsExactly(bookIdB, bookIdA);
 
-        verify(bookRecommendationRepository).getAllByUser(eq(user));
-        verify(bookMapper).mapToDto(eq(bookA));
+        verify(bookRecommendationRepository).getAllByUserOrderBySimilarityRatioDesc(eq(user));
         verify(bookMapper).mapToDto(eq(bookB));
+        verify(bookMapper).mapToDto(eq(bookA));
         verifyNoInteractions(bookRepository, bookRatingRepository);
     }
 
