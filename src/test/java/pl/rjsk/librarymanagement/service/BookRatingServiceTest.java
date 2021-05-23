@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class BookRatingServiceTest {
+class BookRatingServiceTest {
 
     private static final long BOOK_RATING_ID = 1L;
     private static final long USER_ID = 2L;
@@ -172,78 +172,78 @@ public class BookRatingServiceTest {
         verify(bookRatingRepository).save(eq(bookRating));
         verifyNoInteractions(bookMapper);
     }
-    
+
     @Test
     void get_bookException() {
         User user = new User();
-        
+
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
-        
+
         assertThatThrownBy(() -> bookRatingService.get(user, BOOK_ID))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Unable to fetch book with given id: " + BOOK_ID);
-        
+
         verify(bookRepository).findById(eq(BOOK_ID));
         verifyNoInteractions(bookMapper);
         verifyNoInteractions(bookRatingMapper);
         verifyNoInteractions(bookRatingRepository);
     }
-    
+
     @Test
     void get_noRatingYet() {
         User user = new User();
         user.setId(USER_ID);
-        
+
         Book book = new Book();
         book.setId(BOOK_ID);
-        
+
         when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
         when(bookRatingRepository.findBookRatingByUserAndBook(any(User.class), any(Book.class)))
                 .thenReturn(Optional.empty());
-        
+
         BookRatingDto result = bookRatingService.get(user, BOOK_ID);
-        
+
         assertThat(result)
                 .isNull();
-        
+
         verify(bookRepository).findById(eq(BOOK_ID));
         verify(bookRatingRepository).findBookRatingByUserAndBook(eq(user), eq(book));
         verifyNoInteractions(bookMapper);
         verifyNoInteractions(bookRatingMapper);
     }
-    
+
     @Test
     void get() {
         User user = new User();
         user.setId(USER_ID);
-        
+
         Book book = new Book();
         book.setId(BOOK_ID);
-        
+
         int rating = 3;
-        
+
         BookRating bookRating = new BookRating();
         bookRating.setUser(user);
         bookRating.setBook(book);
         bookRating.setRating(rating);
-        
+
         BookRatingDto bookRatingDto = new BookRatingDto();
         bookRatingDto.setUserId(USER_ID);
         bookRatingDto.setBookId(BOOK_ID);
         bookRatingDto.setRating(rating);
-        
+
         when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
         when(bookRatingRepository.findBookRatingByUserAndBook(any(User.class), any(Book.class)))
                 .thenReturn(Optional.of(bookRating));
         when(bookRatingMapper.mapToDto(any(BookRating.class))).thenReturn(bookRatingDto);
-        
+
         BookRatingDto result = bookRatingService.get(user, BOOK_ID);
-        
+
         assertThat(result)
                 .isNotNull()
                 .extracting("userId", "bookId", "rating")
                 .containsExactly(USER_ID, BOOK_ID, rating);
-        
+
         verify(bookRepository).findById(eq(BOOK_ID));
         verify(bookRatingRepository).findBookRatingByUserAndBook(eq(user), eq(book));
         verify(bookRatingMapper).mapToDto(eq(bookRating));
@@ -278,7 +278,6 @@ public class BookRatingServiceTest {
                 .hasSize(1)
                 .extracting("id", "rating")
                 .containsExactly(tuple(BOOK_ID, rating));
-
 
         verify(bookRatingRepository).findAllByUser(eq(user));
         verify(bookMapper).mapToBookWithRating(eq(book));
