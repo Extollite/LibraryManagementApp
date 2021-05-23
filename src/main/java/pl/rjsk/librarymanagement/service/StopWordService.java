@@ -16,6 +16,7 @@ import java.util.Set;
 @Service
 @Slf4j
 public class StopWordService {
+
     private final Set<String> keywordStopWords = new HashSet<>();
 
     @Value("${keywords.stopwords.filename}")
