@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.rjsk.librarymanagement.mapper.BookMapper;
+import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.model.entity.BookRating;
 import pl.rjsk.librarymanagement.model.entity.BookRecommendation;
@@ -32,11 +34,15 @@ import static org.mockito.Mockito.when;
 class BookRecommendationServiceTest {
 
     @Mock
+    private BookMapper bookMapper;
+    @Mock
     private BookRatingRepository bookRatingRepository;
     @Mock
     private BookRepository bookRepository;
     @Mock
     private BookRecommendationRepository bookRecommendationRepository;
+    @Mock
+    private BookService bookService;
 
     @InjectMocks
     private BookRecommendationService bookRecommendationService;
@@ -56,7 +62,7 @@ class BookRecommendationServiceTest {
                 .isEmpty();
 
         verify(bookRatingRepository).findAllByUser(eq(user));
-        verifyNoInteractions(bookRepository, bookRecommendationRepository);
+        verifyNoInteractions(bookRepository, bookRecommendationRepository, bookService);
     }
 
     @Test
@@ -106,6 +112,54 @@ class BookRecommendationServiceTest {
         verify(bookRecommendationRepository).deleteAllByUser(eq(user));
         verify(bookRepository).findAllByIdNotIn(eq(Set.of(bookRating1stId, bookRating2ndId, bookRating3rdId)));
         verify(bookRecommendationRepository).saveAll(anyList());
+        verifyNoInteractions(bookService);
+    }
+
+    @Test
+    void getRecommendedBooks() {
+        User user = new User();
+
+        long bookIdA = 1L;
+        long bookIdB = 2L;
+        
+        double similarityRatioA = 0.75D;
+        double similarityRatioB = 0.8D;
+
+        Book bookA = new Book();
+        Book bookB = new Book();
+        BookDto bookDtoA = new BookDto();
+        BookDto bookDtoB = new BookDto();
+        BookRecommendation bookRecommendationA = new BookRecommendation();
+        BookRecommendation bookRecommendationB = new BookRecommendation();
+
+        bookA.setId(bookIdA);
+        bookB.setId(bookIdB);
+        bookDtoA.setId(bookIdA);
+        bookDtoB.setId(bookIdB);
+        bookRecommendationA.setBook(bookA);
+        bookRecommendationB.setBook(bookB);
+        bookRecommendationA.setSimilarityRatio(similarityRatioA);
+        bookRecommendationB.setSimilarityRatio(similarityRatioB);
+
+        when(bookRecommendationRepository.getAllByUserOrderBySimilarityRatioDesc(any(User.class)))
+                .thenReturn(List.of(bookRecommendationB, bookRecommendationA));
+        when(bookMapper.mapToDto(any(Book.class))).thenReturn(bookDtoB, bookDtoA);
+        when(bookService.addNumberOfAvailableCopiesToDto(any(BookDto.class))).thenReturn(bookDtoB, bookDtoA);
+
+        List<BookDto> result = bookRecommendationService.getRecommendedBooks(user);
+
+        assertThat(result)
+                .isNotNull()
+                .hasSize(2)
+                .extracting("id")
+                .containsExactly(bookIdB, bookIdA);
+
+        verify(bookRecommendationRepository).getAllByUserOrderBySimilarityRatioDesc(eq(user));
+        verify(bookMapper).mapToDto(eq(bookB));
+        verify(bookMapper).mapToDto(eq(bookA));
+        verify(bookService).addNumberOfAvailableCopiesToDto(eq(bookDtoB));
+        verify(bookService).addNumberOfAvailableCopiesToDto(eq(bookDtoA));
+        verifyNoInteractions(bookRepository, bookRatingRepository);
     }
 
     private BookRating prepareBookRating(long bookId, Set<Keyword> keywords, int rating) {

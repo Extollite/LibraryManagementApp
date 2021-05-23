@@ -8,7 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.rjsk.librarymanagement.mapper.BookMapper;
+import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
+import pl.rjsk.librarymanagement.model.entity.BookCopy;
 import pl.rjsk.librarymanagement.model.entity.BookRating;
 import pl.rjsk.librarymanagement.model.entity.BookRecommendation;
 import pl.rjsk.librarymanagement.model.entity.Keyword;
@@ -32,9 +35,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BookRecommendationService {
 
+    private final BookMapper bookMapper;
     private final BookRatingRepository bookRatingRepository;
     private final BookRepository bookRepository;
     private final BookRecommendationRepository bookRecommendationRepository;
+    private final BookService bookService;
 
     //Set default value for testing purposes
     @Value("${recommendation.rated.books.min-amount:20}")
@@ -97,6 +102,18 @@ public class BookRecommendationService {
 //        }
 
         return bookRecommendationRepository.saveAll(bookRecommendations);
+    }
+
+    public List<BookDto> getRecommendedBooks(User user) {
+         return bookRecommendationRepository.getAllByUserOrderBySimilarityRatioDesc(user).stream()
+                .map(BookRecommendation::getBook)
+                .map(bookMapper::mapToDto)
+                .map(bookService::addNumberOfAvailableCopiesToDto)
+                .collect(Collectors.toList());
+    }
+
+    public long getMinRatedBookToCalculate() {
+        return minRatedBookToCalculate;
     }
 
     private Map<Keyword, CurrentAvg> calculateKeywordWeights(List<BookRating> bookRatings) {

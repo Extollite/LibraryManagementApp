@@ -146,7 +146,7 @@ public class BookService {
     public List<BookDto> getAllBooksToDisplay() {
         return bookMapper.mapIterableToDtoList(bookRepository.findAll())
                 .stream()
-                .map(this::addNumberOfAvailableCopies)
+                .map(this::addNumberOfAvailableCopiesToDto)
                 .collect(Collectors.toList());
     }
 
@@ -158,7 +158,7 @@ public class BookService {
         return bookMapper.mapToDto(book);
     }
 
-    private BookDto addNumberOfAvailableCopies(BookDto bookDto) {
+    public BookDto addNumberOfAvailableCopiesToDto(BookDto bookDto) {
         List<Long> bookCopyIds =
                 bookCopyRepository.findAllByBookId(bookDto.getId())
                         .stream()

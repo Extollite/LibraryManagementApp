@@ -70,4 +70,8 @@ public class BookRatingService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public long getRatingCount(User user) {
+        return bookRatingRepository.findAllByUser(user).size();
+    }
 }
