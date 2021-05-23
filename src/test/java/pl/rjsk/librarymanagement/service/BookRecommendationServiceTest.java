@@ -135,11 +135,7 @@ class BookRecommendationServiceTest {
 
         when(bookRecommendationRepository.getAllByUser(any(User.class)))
                 .thenReturn(List.of(bookRecommendationA, bookRecommendationB));
-        when(bookMapper.mapToDto(any(Book.class))).thenAnswer(invocation -> {
-            BookDto bookDto = new BookDto();
-            bookDto.setId(invocation.getArgument(0, Book.class).getId());
-            return bookDto;
-        });
+        when(bookMapper.mapToDto(any(Book.class))).thenReturn(bookDtoA, bookDtoB);
 
         List<BookDto> result = bookRecommendationService.getRecommendedBooks(user);
 
