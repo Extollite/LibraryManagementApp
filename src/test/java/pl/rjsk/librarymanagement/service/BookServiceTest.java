@@ -1,9 +1,8 @@
 package pl.rjsk.librarymanagement.service;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatcher;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -11,7 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ResourceUtils;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
@@ -25,11 +24,14 @@ import pl.rjsk.librarymanagement.repository.BookHistoryRepository;
 import pl.rjsk.librarymanagement.repository.BookRepository;
 import pl.rjsk.librarymanagement.repository.KeywordRepository;
 
-import java.util.Collection;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -51,6 +53,8 @@ class BookServiceTest {
     private static final long BOOK_COPY_ID = 1L;
     private static final int NUM_OF_COPIES = 1;
 
+    private static final Set<String> KEYWORD_STOP_WORDS = new HashSet<>();
+
     @Mock
     private BookRepository bookRepository;
 
@@ -66,134 +70,131 @@ class BookServiceTest {
     @Mock
     private KeywordRepository keywordRepository;
 
+    @Mock
+    private StopWordService stopWordService;
+
     @InjectMocks
     private BookService bookService;
+
+    @BeforeAll
+    static void loadStopWords() {
+        try {
+            File file = ResourceUtils.getFile("classpath:words_to_filter.txt");
+            List<String> lines = Files.readAllLines(file.toPath());
+            KEYWORD_STOP_WORDS.addAll(lines);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     @Test
     void save() {
         Set<Long> authorsIds = Set.of(1L, 2L);
         String description = "A fantastic book about the power of friendship.";
         String keywordsString = "friendship, adventure, power, friendship";
-        
+
         BookWithKeywordsDto bookDto = new BookWithKeywordsDto();
+        bookDto.setTitle("");
         bookDto.setAuthorsIds(authorsIds);
         bookDto.setDescription(description);
         bookDto.setKeywords(keywordsString);
-        
+
         Set<Keyword> bookKeywordsAlreadyPresent = new LinkedHashSet<>();
         bookKeywordsAlreadyPresent.add(new Keyword("adventure"));
         bookKeywordsAlreadyPresent.add(new Keyword("power"));
-      
-        Set<Keyword> bookKeywords = new LinkedHashSet<>();
-        bookKeywords.add(new Keyword("friendship"));
-        bookKeywords.add(new Keyword("adventure"));
-        bookKeywords.add(new Keyword("power"));
-        
+
         Set<String> bookKeywordNames = new LinkedHashSet<>();
         bookKeywordNames.add("friendship");
         bookKeywordNames.add("adventure");
         bookKeywordNames.add("power");
 
         String bookKeywordsString = "friendship, adventure, power";
-        
-        Author authorA = new Author();
-        Author authorB = new Author();
-        
-        authorA.setId(1L);
-        authorA.setFirstName("Jan");
-        authorA.setLastName("Kowalski");
- 
-        authorB.setId(2L);
-        authorB.setFirstName("Paulo");
-        authorB.setLastName("Coelho");
-        
-        Set<Author> authors = Set.of(authorA, authorB);
-        
-        Book newBook = new Book();
-        newBook.setAuthors(authors);
-        newBook.setDescription(description);
-        newBook.setKeywords(bookKeywords);
-        
+
         BookWithKeywordsDto newBookDto = new BookWithKeywordsDto();
         newBookDto.setId(BOOK_ID);
         newBookDto.setAuthorsIds(authorsIds);
         newBookDto.setDescription(description);
         newBookDto.setKeywords(bookKeywordsString);
-        
-        when(keywordRepository.findAllByNameIn(any())).thenReturn(bookKeywordsAlreadyPresent);
-        when(bookRepository.save(any(Book.class))).thenReturn(newBook);
+
+        when(keywordRepository.findAllByNameIn(anyCollection())).thenReturn(bookKeywordsAlreadyPresent);
+        when(bookRepository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(bookMapper.mapToDtoWithKeywords(any(Book.class))).thenReturn(newBookDto);
-        
+
         BookWithKeywordsDto result = bookService.save(bookDto);
-        
+
         assertThat(result)
                 .isNotNull()
                 .extracting("id", "authorsIds", "description", "keywords")
                 .containsExactly(BOOK_ID, authorsIds, description, bookKeywordsString);
-        
+
         verify(keywordRepository).findAllByNameIn(eq(bookKeywordNames));
-        verify(bookRepository).save(eq(newBook));
-        verify(bookMapper).mapToDtoWithKeywords(eq(newBook));
-        verifyNoInteractions(bookHistoryRepository, bookCopyRepository);
+        verify(bookRepository).save(any(Book.class));
+        verify(bookMapper).mapToDtoWithKeywords(any(Book.class));
+        verifyNoInteractions(bookHistoryRepository, bookCopyRepository, stopWordService);
     }
-    
-//    @Test
-//    void updateBook() {
-//        String description = "A fantastic book about the power of friendship.";
-//        String keywordsString = "friendship, book, adventure, power, friendship";
-//        Set<Long> authorsIds = Set.of(1L, 2L, 5L);
-//
-//        BookWithKeywordsDto bookDto = new BookWithKeywordsDto();
-//        bookDto.setId(BOOK_ID);
-//        bookDto.setAuthorsIds(authorsIds);
-//        bookDto.setDescription(description);
-//        bookDto.setKeywords(keywordsString);
-//
-//        Set<Keyword> keywords = new LinkedHashSet<>();
-//        keywords.add(new Keyword("friendship"));
-//        keywords.add(new Keyword("book"));
-//        keywords.add(new Keyword("adventure"));
-//        keywords.add(new Keyword("power"));
-//
-//        String mappedKeywords = "friendship, book, adventure, power";
-//
-//        Set<Author> authors = new LinkedHashSet<>();
-//        authors.add(new Author(1L));
-//        authors.add(new Author(2L));
-//        authors.add(new Author(5L));
-//
-//        Book newBook = new Book();
-//        newBook.setAuthors(authors);
-//        newBook.setDescription(description);
-//        newBook.setKeywords(keywords);
-//        
-//        Set<Long> authorsIds = 
-//        
-//        Book oldBook = new Book();
-//        oldBook.setAuthors();
-//
-//        BookWithKeywordsDto savedBookDto = new BookWithKeywordsDto();
-//        savedBookDto.setId(BOOK_ID);
-//        savedBookDto.setAuthorsIds(authorsIds);
-//        savedBookDto.setDescription(description);
-//        savedBookDto.setKeywords("friendship, book, adventure, power");
-//
-//        when(bookRepository.save(any(Book.class))).thenReturn(newBook);
-//        when(bookMapper.mapToDtoWithKeywords(any(Book.class))).thenReturn(savedBookDto);
-//
-//        BookWithKeywordsDto result = bookService.save(bookDto);
-//
-//        assertThat(result)
-//                .isNotNull()
-//                .extracting("id", "authorsIds", "description", "keywords")
-//                .containsExactly(BOOK_ID, authorsIds, description, mappedKeywords);
-//
-//        verify(bookRepository).save(newBook);
-//        verify(bookMapper).mapToDtoWithKeywords(newBook);
-//        verifyNoInteractions(bookHistoryRepository, bookCopyRepository, keywordRepository);
-//    }
-    
-    
+
+    @Test
+    void update() {
+        Set<Long> authorsIds = Set.of(1L, 2L);
+
+        final String description = "A fantastic book about the power of friendship.";
+
+        BookWithKeywordsDto bookDto = new BookWithKeywordsDto();
+        bookDto.setId(BOOK_ID);
+        bookDto.setTitle("");
+        bookDto.setAuthorsIds(authorsIds);
+        bookDto.setDescription(description);
+        bookDto.setKeywords(null);
+
+        Set<String> bookKeywordNames = new LinkedHashSet<>();
+        bookKeywordNames.add("friendship");
+        bookKeywordNames.add("book");
+        bookKeywordNames.add("fantastic");
+        bookKeywordNames.add("power");
+
+        Set<Keyword> bookKeywords = new HashSet<>();
+        bookKeywords.add(new Keyword("friendship"));
+        bookKeywords.add(new Keyword("book"));
+        bookKeywords.add(new Keyword("fantastic"));
+        bookKeywords.add(new Keyword("power"));
+
+        var book = new Book();
+        book.setId(BOOK_ID);
+
+        when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
+        when(keywordRepository.findAllByNameIn(anyCollection())).thenReturn(Collections.emptySet());
+        when(stopWordService.getAllStopWords()).thenReturn(KEYWORD_STOP_WORDS);
+
+        Book result = bookService.updateBook(bookDto);
+
+        assertThat(result)
+                .isNotNull()
+                .matches(res -> Objects.equals(res.getId(), BOOK_ID))
+                .matches(res -> Objects.equals(res.getDescription(), description))
+                .matches(res -> res.getAuthors().containsAll(Set.of(new Author(1L), new Author(2L))))
+                .matches(res -> res.getKeywords().containsAll(bookKeywords));
+
+        verify(bookRepository).findById(eq(BOOK_ID));
+        verify(keywordRepository).findAllByNameIn(eq(bookKeywordNames));
+        verify(stopWordService).getAllStopWords();
+        verifyNoInteractions(bookHistoryRepository, bookCopyRepository, bookMapper);
+    }
+
+    @Test
+    void update_exceptionThrown() {
+        BookWithKeywordsDto bookDto = new BookWithKeywordsDto();
+        bookDto.setId(BOOK_ID);
+
+        when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bookService.updateBook(bookDto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Unable to fetch book with given id: " + bookDto.getId());
+
+        verify(bookRepository).findById(eq(BOOK_ID));
+        verifyNoInteractions(keywordRepository, stopWordService, bookHistoryRepository, bookCopyRepository, bookMapper);
+    }
+
     @Test
     void getBookWithKeywordsById() {
         Book book = new Book();
@@ -211,7 +212,7 @@ class BookServiceTest {
 
         verify(bookRepository).findById(eq(BOOK_ID));
         verify(bookMapper).mapToDtoWithKeywords(eq(book));
-        verifyNoInteractions(bookHistoryRepository, bookCopyRepository, keywordRepository);
+        verifyNoInteractions(bookHistoryRepository, bookCopyRepository, keywordRepository, stopWordService);
     }
 
     @Test
@@ -225,7 +226,7 @@ class BookServiceTest {
                 .hasMessage(expectedMessage);
 
         verify(bookRepository).findById(eq(BOOK_ID));
-        verifyNoInteractions(bookHistoryRepository, bookCopyRepository, bookMapper, keywordRepository);
+        verifyNoInteractions(bookHistoryRepository, bookCopyRepository, bookMapper, keywordRepository, stopWordService);
     }
 
     @Test
@@ -256,7 +257,7 @@ class BookServiceTest {
         verify(bookMapper).mapIterableToDtoList(eq(books));
         verify(bookCopyRepository).findAllByBookId(eq(BOOK_ID));
         verify(bookHistoryRepository).findAllNotAvailable(eq(bookCopyIds));
-        verifyNoInteractions(keywordRepository);
+        verifyNoInteractions(keywordRepository, stopWordService);
     }
 
     @Test
@@ -292,6 +293,6 @@ class BookServiceTest {
         verify(bookRepository).findAll(eq(paging));
         verify(bookMapper).mapIterableToDtoWithCopiesList(eq(bookPage));
         verify(bookCopyRepository).findAllByBookId(eq(BOOK_ID));
-        verifyNoInteractions(bookHistoryRepository, keywordRepository);
+        verifyNoInteractions(bookHistoryRepository, keywordRepository, stopWordService);
     }
 }

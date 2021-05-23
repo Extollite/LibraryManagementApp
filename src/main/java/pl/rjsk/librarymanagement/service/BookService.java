@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,21 +45,7 @@ public class BookService {
     private final BookHistoryRepository bookHistoryRepository;
     private final BookMapper bookMapper;
     private final KeywordRepository keywordRepository;
-    private final Set<String> keywordStopWords = new HashSet<>();
-
-    @Value("${keywords.stopwords.filename}")
-    private String keywordsStopWordsFilename;
-
-    @PostConstruct
-    private void loadKeywordStopWordsFromFile() {
-        try {
-            File file = ResourceUtils.getFile(keywordsStopWordsFilename);
-            List<String> lines = Files.readAllLines(file.toPath());
-            keywordStopWords.addAll(lines);
-        } catch (IOException ex) {
-            log.error("Exception: ", ex);
-        }
-    }
+    private final StopWordService stopWordService;
 
     @Transactional
     public BookWithKeywordsDto save(BookWithKeywordsDto bookDto) {
@@ -70,16 +57,15 @@ public class BookService {
         return bookMapper.mapToDtoWithKeywords(book);
     }
 
-    //TODO: test logic
     @Transactional
-    public void updateBook(BookWithKeywordsDto bookDto) {
+    public Book updateBook(BookWithKeywordsDto bookDto) {
         var bookToUpdate = bookRepository.findById(bookDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + bookDto.getId()));
 
-        updateBookByBookDto(bookDto, bookToUpdate);
+        return updateBookByBookDto(bookDto, bookToUpdate);
     }
 
-    private void updateBookByBookDto(BookWithKeywordsDto bookDto, Book bookToUpdate) {
+    private Book updateBookByBookDto(BookWithKeywordsDto bookDto, Book bookToUpdate) {
         Set<Keyword> keywords = prepareKeywords(bookDto.getKeywords(),
                 bookDto.getDescription() + " " + bookDto.getTitle());
         Set<Author> authors = bookDto.getAuthorsIds().stream().map(Author::new).collect(Collectors.toSet());
@@ -92,6 +78,8 @@ public class BookService {
         bookToUpdate.setYearOfFirstRelease(bookDto.getYearOfFirstRelease());
         bookToUpdate.setDescription(bookDto.getDescription());
         bookToUpdate.setKeywords(keywords);
+
+        return bookToUpdate;
     }
 
     private Set<Keyword> prepareKeywords(String keywords, String description) {
@@ -104,16 +92,15 @@ public class BookService {
                     .collect(Collectors.toSet());
         }
 
-        System.out.println(keywordNames);
-
         Set<Keyword> existingKeywords = keywordRepository.findAllByNameIn(keywordNames);
         Set<String> existingKeywordNames = existingKeywords
                 .stream()
                 .map(Keyword::getName)
                 .collect(Collectors.toSet());
-        keywordNames.removeAll(existingKeywordNames);
+        Set<String> parsedKeywordNames = new HashSet<>(keywordNames);
+        parsedKeywordNames.removeAll(existingKeywordNames);
 
-        Set<Keyword> parsedKeywords = keywordNames
+        Set<Keyword> parsedKeywords = parsedKeywordNames
                 .stream()
                 .map(Keyword::new)
                 .collect(Collectors.toSet());
@@ -123,6 +110,8 @@ public class BookService {
     }
 
     private Set<String> getKeywordsFromDesc(String description) {
+        Set<String> keywordStopWords = stopWordService.getAllStopWords();
+
         return Arrays.stream(description.toLowerCase()
                 .trim()
                 .replaceAll(" +", " ")
