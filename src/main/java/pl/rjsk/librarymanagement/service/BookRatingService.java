@@ -25,7 +25,6 @@ public class BookRatingService {
     private final BookMapper bookMapper;
     private final BookRepository bookRepository;
 
-
     @Transactional
     public BookRatingDto updateOrSave(User user, long bookId, int rating) {
         Book book = bookRepository.findById(bookId)

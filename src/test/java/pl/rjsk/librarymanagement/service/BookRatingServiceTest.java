@@ -64,9 +64,7 @@ class BookRatingServiceTest {
                 .hasMessage("Unable to fetch book with given id: " + BOOK_ID);
 
         verify(bookRepository).findById(eq(BOOK_ID));
-        verifyNoInteractions(bookMapper);
-        verifyNoInteractions(bookRatingMapper);
-        verifyNoInteractions(bookRatingRepository);
+        verifyNoInteractions(bookMapper, bookRatingMapper, bookRatingRepository);
     }
 
     @ParameterizedTest
@@ -82,9 +80,7 @@ class BookRatingServiceTest {
                 .hasMessage("Book rating must be within 1-10 range. Rating " + rating + " is not");
 
         verify(bookRepository).findById(eq(BOOK_ID));
-        verifyNoInteractions(bookMapper);
-        verifyNoInteractions(bookRatingMapper);
-        verifyNoInteractions(bookRatingRepository);
+        verifyNoInteractions(bookMapper, bookRatingMapper, bookRatingRepository);
     }
 
     @Test
@@ -184,9 +180,7 @@ class BookRatingServiceTest {
                 .hasMessage("Unable to fetch book with given id: " + BOOK_ID);
 
         verify(bookRepository).findById(eq(BOOK_ID));
-        verifyNoInteractions(bookMapper);
-        verifyNoInteractions(bookRatingMapper);
-        verifyNoInteractions(bookRatingRepository);
+        verifyNoInteractions(bookMapper, bookRatingMapper, bookRatingRepository);
     }
 
     @Test
@@ -208,8 +202,7 @@ class BookRatingServiceTest {
 
         verify(bookRepository).findById(eq(BOOK_ID));
         verify(bookRatingRepository).findBookRatingByUserAndBook(eq(user), eq(book));
-        verifyNoInteractions(bookMapper);
-        verifyNoInteractions(bookRatingMapper);
+        verifyNoInteractions(bookMapper, bookRatingMapper);
     }
 
     @Test
@@ -281,7 +274,6 @@ class BookRatingServiceTest {
 
         verify(bookRatingRepository).findAllByUser(eq(user));
         verify(bookMapper).mapToBookWithRating(eq(book));
-        verifyNoInteractions(bookRepository);
-        verifyNoInteractions(bookRatingMapper);
+        verifyNoInteractions(bookRepository, bookRatingMapper);
     }
 }
