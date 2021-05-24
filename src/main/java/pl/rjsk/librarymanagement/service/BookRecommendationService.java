@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.entity.Book;
-import pl.rjsk.librarymanagement.model.entity.BookCopy;
 import pl.rjsk.librarymanagement.model.entity.BookRating;
 import pl.rjsk.librarymanagement.model.entity.BookRecommendation;
 import pl.rjsk.librarymanagement.model.entity.Keyword;
