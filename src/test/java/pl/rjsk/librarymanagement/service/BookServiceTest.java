@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.ResourceUtils;
+import pl.rjsk.librarymanagement.exception.ResourceNotFoundException;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
@@ -188,7 +189,7 @@ class BookServiceTest {
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookService.updateBook(bookDto))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Unable to fetch book with given id: " + bookDto.getId());
 
         verify(bookRepository).findById(eq(BOOK_ID));
@@ -222,7 +223,7 @@ class BookServiceTest {
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookService.getBookWithKeywordsById(BOOK_ID))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(expectedMessage);
 
         verify(bookRepository).findById(eq(BOOK_ID));

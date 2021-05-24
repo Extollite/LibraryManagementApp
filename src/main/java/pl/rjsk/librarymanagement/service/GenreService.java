@@ -3,6 +3,7 @@ package pl.rjsk.librarymanagement.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.rjsk.librarymanagement.exception.ResourceNotFoundException;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.model.entity.Genre;
 import pl.rjsk.librarymanagement.repository.BookRepository;
@@ -23,13 +24,13 @@ public class GenreService {
 
     public Genre getById(long id) {
         return genreRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to get genre with given id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to get genre with given id: " + id));
     }
 
     @Transactional
     public void delete(long id) {
         Genre genre = genreRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to delete genre with given id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to delete genre with given id: " + id));
 
         List<Book> books = bookRepository.findAllByGenreId(genre.getId());
 

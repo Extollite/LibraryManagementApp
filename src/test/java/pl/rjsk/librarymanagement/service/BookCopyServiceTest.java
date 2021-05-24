@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.rjsk.librarymanagement.exception.ResourceNotFoundException;
 import pl.rjsk.librarymanagement.mapper.BookCopyMapper;
 import pl.rjsk.librarymanagement.model.dto.BookCopyDueDateDto;
 import pl.rjsk.librarymanagement.model.entity.BookCopy;
@@ -130,7 +131,7 @@ class BookCopyServiceTest {
         when(bookCopyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookCopyService.getByCopyId(BOOK_COPY_AVAILABLE_ID))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Unable to fetch book copy with given id: " + BOOK_COPY_AVAILABLE_ID);
 
         verify(bookCopyRepository).findById(eq(BOOK_COPY_AVAILABLE_ID));
@@ -169,7 +170,7 @@ class BookCopyServiceTest {
         when(bookCopyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookCopyService.updateBookCopy(bookCopyDto))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Unable to fetch book copy with given id: " + BOOK_COPY_UNAVAILABLE_ID);
 
         verify(bookCopyRepository).findById(eq(BOOK_COPY_UNAVAILABLE_ID));

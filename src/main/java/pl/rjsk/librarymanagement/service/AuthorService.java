@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.rjsk.librarymanagement.exception.ResourceNotFoundException;
 import pl.rjsk.librarymanagement.mapper.AuthorMapper;
 import pl.rjsk.librarymanagement.model.dto.AuthorDto;
 import pl.rjsk.librarymanagement.model.entity.Author;
@@ -32,7 +33,7 @@ public class AuthorService {
     @Transactional
     public void delete(long authorId) {
         Author author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to delete author with given id: " + authorId));
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to delete author with given id: " + authorId));
         for (var book : author.getBooks()) {
             book.getAuthors().remove(author);
         }

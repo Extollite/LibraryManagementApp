@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import pl.rjsk.librarymanagement.exception.ResourceNotFoundException;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
@@ -53,7 +54,8 @@ public class BookService {
     @Transactional
     public Book updateBook(BookWithKeywordsDto bookDto) {
         var bookToUpdate = bookRepository.findById(bookDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + bookDto.getId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to fetch book with given id: "
+                        + bookDto.getId()));
 
         return updateBookByBookDto(bookDto, bookToUpdate);
     }
@@ -121,7 +123,7 @@ public class BookService {
     @Transactional
     public BookWithKeywordsDto getBookWithKeywordsById(long id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to fetch book with given id: " + id));
 
         return bookMapper.mapToDtoWithKeywords(book);
     }
@@ -137,7 +139,7 @@ public class BookService {
     @Transactional
     public BookDto getBookById(long id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to fetch book with given id: " + id));
 
         return bookMapper.mapToDto(book);
     }

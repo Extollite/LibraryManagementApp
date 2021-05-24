@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import pl.rjsk.librarymanagement.exception.ResourceNotFoundException;
 import pl.rjsk.librarymanagement.mapper.BookCopyMapper;
 import pl.rjsk.librarymanagement.model.dto.BookCopyDueDateDto;
 import pl.rjsk.librarymanagement.model.entity.BookCopy;
@@ -56,7 +57,7 @@ public class BookCopyService {
     @Transactional
     public BookCopyDueDateDto getByCopyId(long id) {
         BookCopy bookCopy = bookCopyRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book copy with given id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to fetch book copy with given id: " + id));
 
         return addDueOrReturnedDate(bookCopyMapper.mapToDto(bookCopy));
     }
@@ -79,7 +80,8 @@ public class BookCopyService {
         log.info(bookCopyDto.toString());
         var bookCopyToUpdate = bookCopyRepository.findById(bookCopyDto.getId())
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Unable to fetch book copy with given id: " + bookCopyDto.getId()));
+                        new ResourceNotFoundException("Unable to fetch book copy with given id: "
+                                + bookCopyDto.getId()));
 
         if (!StringUtils.hasLength(bookCopyDto.getAlternativeTitle())) {
             bookCopyDto.setAlternativeTitle(null);

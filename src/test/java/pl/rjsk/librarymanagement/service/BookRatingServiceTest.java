@@ -7,6 +7,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.rjsk.librarymanagement.exception.IncorrectDataException;
+import pl.rjsk.librarymanagement.exception.ResourceNotFoundException;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.mapper.BookRatingMapper;
 import pl.rjsk.librarymanagement.model.dto.BookRatingDto;
@@ -60,7 +62,7 @@ class BookRatingServiceTest {
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookRatingService.updateOrSave(user, BOOK_ID, rating))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Unable to fetch book with given id: " + BOOK_ID);
 
         verify(bookRepository).findById(eq(BOOK_ID));
@@ -76,7 +78,7 @@ class BookRatingServiceTest {
         when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
 
         assertThatThrownBy(() -> bookRatingService.updateOrSave(user, BOOK_ID, rating))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IncorrectDataException.class)
                 .hasMessage("Book rating must be within 1-10 range. Rating " + rating + " is not");
 
         verify(bookRepository).findById(eq(BOOK_ID));
@@ -176,7 +178,7 @@ class BookRatingServiceTest {
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookRatingService.get(user, BOOK_ID))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Unable to fetch book with given id: " + BOOK_ID);
 
         verify(bookRepository).findById(eq(BOOK_ID));
