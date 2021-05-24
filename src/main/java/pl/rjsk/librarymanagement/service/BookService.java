@@ -61,8 +61,7 @@ public class BookService {
     }
 
     private Book updateBookByBookDto(BookWithKeywordsDto bookDto, Book bookToUpdate) {
-        Set<Keyword> keywords = prepareKeywords(bookDto.getKeywords(),
-                bookDto.getDescription() + " " + bookDto.getTitle());
+        Set<Keyword> keywords = prepareKeywords(bookDto.getKeywords(), bookDto.getDescription(), bookDto.getTitle());
         Set<Author> authors = bookDto.getAuthorsIds().stream().map(Author::new).collect(Collectors.toSet());
 
         keywords.forEach(k -> log.trace(k.getName()));
@@ -77,10 +76,13 @@ public class BookService {
         return bookToUpdate;
     }
 
-    private Set<Keyword> prepareKeywords(String keywords, String description) {
+    private Set<Keyword> prepareKeywords(String keywords, String description, String title) {
         Set<String> keywordNames;
-        if (!StringUtils.hasLength(keywords) && description != null) {
-            keywordNames = getKeywordsFromDesc(description);
+        if (!StringUtils.hasLength(keywords)) {
+            String keywordSource = description != null ? description : "";
+            keywordSource += title != null ? " " + title : "";
+
+            keywordNames = getKeywordsFromDesc(keywordSource);
         } else {
             keywordNames = Arrays.stream(keywords.split("\\s*,\\s*"))
                     .map(String::toLowerCase)
