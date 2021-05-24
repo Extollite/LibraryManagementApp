@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.rjsk.librarymanagement.exception.IncorrectDataException;
+import pl.rjsk.librarymanagement.exception.ResourceNotFoundException;
 import pl.rjsk.librarymanagement.model.entity.User;
 import pl.rjsk.librarymanagement.repository.UserRepository;
 import pl.rjsk.librarymanagement.security.data.UserRole;
@@ -29,13 +31,13 @@ public class UserService {
     @Transactional
     public User getUserByPesel(String pesel) {
         return userRepository.findByPesel(pesel)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch user with given pesel: " + pesel));
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to fetch user with given pesel: " + pesel));
     }
 
     @Transactional
     public void delete(long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to delete user with given id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to delete user with given id: " + userId));
 
         userRepository.delete(user);
     }
@@ -43,11 +45,11 @@ public class UserService {
     @Transactional
     public User save(User user) {
         if (StringUtils.length(user.getPassword()) < passwordMinLength) {
-            throw new IllegalArgumentException("Password must contain at least " + passwordMinLength + " characters");
+            throw new IncorrectDataException("Password must contain at least " + passwordMinLength + " characters");
         }
         userRepository.findByPesel(user.getPesel())
                 .ifPresent((dbUser) -> {
-                    throw new IllegalArgumentException("User with pesel " + user.getPesel() + " already exists");
+                    throw new IncorrectDataException("User with pesel " + user.getPesel() + " already exists");
                 });
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -59,10 +61,10 @@ public class UserService {
     @Transactional
     public User updatePassword(String pesel, String password) {
         if (StringUtils.length(password) < passwordMinLength) {
-            throw new IllegalArgumentException("Password must contain at least " + passwordMinLength + " characters");
+            throw new IncorrectDataException("Password must contain at least " + passwordMinLength + " characters");
         }
         User user = userRepository.findByPesel(pesel)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch user with given pesel: " + pesel));
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to fetch user with given pesel: " + pesel));
 
         user.setPassword(passwordEncoder.encode(password));
 

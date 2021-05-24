@@ -3,6 +3,8 @@ package pl.rjsk.librarymanagement.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.rjsk.librarymanagement.exception.IncorrectDataException;
+import pl.rjsk.librarymanagement.exception.ResourceNotFoundException;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.mapper.BookRatingMapper;
 import pl.rjsk.librarymanagement.model.dto.BookRatingDto;
@@ -25,13 +27,12 @@ public class BookRatingService {
     private final BookMapper bookMapper;
     private final BookRepository bookRepository;
 
-
     @Transactional
     public BookRatingDto updateOrSave(User user, long bookId, int rating) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + bookId));
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to fetch book with given id: " + bookId));
         if (rating < 1 || 10 < rating) {
-            throw new IllegalArgumentException("Book rating must be within 1-10 range. Rating " + rating + " is not");
+            throw new IncorrectDataException("Book rating must be within 1-10 range. Rating " + rating + " is not");
         }
 
         BookRating bookRating = bookRatingRepository.findBookRatingByUserAndBook(user, book)
@@ -52,7 +53,7 @@ public class BookRatingService {
 
     public BookRatingDto get(User user, long bookId) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to fetch book with given id: " + bookId));
+                .orElseThrow(() -> new ResourceNotFoundException("Unable to fetch book with given id: " + bookId));
 
         BookRating bookRating = bookRatingRepository.findBookRatingByUserAndBook(user, book)
                 .orElse(null);
