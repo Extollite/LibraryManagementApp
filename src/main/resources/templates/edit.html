@@ -40,7 +40,7 @@
             <div class="form-group">
                 <label for="genreInput">Genre</label>
                 <select class="form-control selectpicker show-tick" data-live-search="true"
-                        data-max-options="1" id="genreInput" multiple required th:field="*{genreId}">
+                        data-max-options="1" id="genreInput" required th:field="*{genreId}">
                     <option th:attr="data-tokens=${genre.name.toLowerCase()}" th:each="genre : ${genres}"
                             th:text="${genre.name}"
                             th:value="${genre.id}">
