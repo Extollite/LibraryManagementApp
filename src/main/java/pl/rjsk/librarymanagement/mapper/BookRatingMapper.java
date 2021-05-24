@@ -8,6 +8,7 @@ import pl.rjsk.librarymanagement.model.entity.BookRating;
 
 @Mapper(componentModel = "spring")
 public interface BookRatingMapper {
+
     @Mappings({
             @Mapping(target = "bookId", source = "book.id"),
             @Mapping(target = "userId", source = "user.id")

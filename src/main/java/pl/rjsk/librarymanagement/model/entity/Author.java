@@ -20,14 +20,18 @@ import java.util.Set;
 public class Author {
 
     @Id
-    @EqualsAndHashCode.Exclude
+    // Change for debug/gapi to works
+//    @EqualsAndHashCode.Exclude
+    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     private Long id;
 
+    @EqualsAndHashCode.Exclude
     @Column(nullable = false)
     private String firstName;
 
+    @EqualsAndHashCode.Exclude
     @Column(nullable = false)
     private String lastName;
 

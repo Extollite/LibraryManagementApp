@@ -20,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/genres")
 public class GenreWebController {
+
     private final GenreService genreService;
 
     @ModelAttribute("module")
