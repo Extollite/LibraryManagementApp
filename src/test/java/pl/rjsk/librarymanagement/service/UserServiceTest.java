@@ -8,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.rjsk.librarymanagement.exception.IncorrectDataException;
+import pl.rjsk.librarymanagement.exception.ResourceNotFoundException;
 import pl.rjsk.librarymanagement.model.entity.User;
 import pl.rjsk.librarymanagement.repository.UserRepository;
 
@@ -49,7 +51,7 @@ class UserServiceTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.delete(USER_ID))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Unable to delete user with given id: " + USER_ID);
 
         verify(userRepository).findById(eq(USER_ID));
@@ -76,7 +78,7 @@ class UserServiceTest {
         user.setPassword(password);
 
         assertThatThrownBy(() -> userService.save(user))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IncorrectDataException.class)
                 .hasMessage("Password must contain at least 5 characters");
 
         verifyNoInteractions(userRepository, passwordEncoder);
@@ -91,7 +93,7 @@ class UserServiceTest {
         when(userRepository.findByPesel(anyString())).thenReturn(Optional.of(new User()));
 
         assertThatThrownBy(() -> userService.save(user))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IncorrectDataException.class)
                 .hasMessage("User with pesel " + PESEL + " already exists");
 
         verify(userRepository).findByPesel(eq(PESEL));
@@ -130,7 +132,7 @@ class UserServiceTest {
     void updatePassword_emptyPassword(String password) {
 
         assertThatThrownBy(() -> userService.updatePassword(PESEL, password))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IncorrectDataException.class)
                 .hasMessage("Password must contain at least 5 characters");
 
         verifyNoInteractions(userRepository, passwordEncoder);
@@ -141,7 +143,7 @@ class UserServiceTest {
         when(userRepository.findByPesel(anyString())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.updatePassword(PESEL, PASSWORD))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Unable to fetch user with given pesel: " + PESEL);
 
         verify(userRepository).findByPesel(eq(PESEL));

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.rjsk.librarymanagement.exception.ResourceNotFoundException;
 import pl.rjsk.librarymanagement.model.entity.Book;
 import pl.rjsk.librarymanagement.model.entity.Genre;
 import pl.rjsk.librarymanagement.repository.BookRepository;
@@ -56,7 +57,7 @@ class GenreServiceTest {
         when(genreRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> genreService.delete(GENRE_ID))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Unable to delete genre with given id: " + GENRE_ID);
 
         verify(genreRepository).findById(eq(GENRE_ID));

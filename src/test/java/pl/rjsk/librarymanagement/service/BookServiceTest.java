@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import pl.rjsk.librarymanagement.exception.ResourceNotFoundException;
 import pl.rjsk.librarymanagement.mapper.BookMapper;
 import pl.rjsk.librarymanagement.model.dto.BookDto;
 import pl.rjsk.librarymanagement.model.dto.BookWithCopiesDto;
@@ -88,7 +89,7 @@ class BookServiceTest {
         when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookService.getBookWithKeywordsById(BOOK_ID))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(expectedMessage);
 
         verify(bookRepository).findById(eq(BOOK_ID));
