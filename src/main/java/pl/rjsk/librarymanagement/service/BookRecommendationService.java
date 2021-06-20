@@ -89,17 +89,6 @@ public class BookRecommendationService {
                 .limit(recommendedBooksAmount)
                 .collect(Collectors.toList());
 
-//        log.info("Start");
-//        for (var similar : bookRecommendations) {
-//            Set<Keyword> same = new HashSet<>(similar.getBook().getKeywords());
-//            same.retainAll(keywordRating.keySet());
-//
-//            log.info(similar.getBook().getTitle() + " " + similar.getSimilarityRatio() + "\n"
-//                    + similar.getBook().getKeywords().stream().map(Keyword::getName).sorted().collect(Collectors.joining(" ")) + "\n" +
-//                    keywordRating.keySet().stream().map(Keyword::getName).sorted().collect(Collectors.joining(" ")) + "\n" +
-//                    same.stream().map(Keyword::getName).sorted().collect(Collectors.joining(" ")));
-//        }
-
         return bookRecommendationRepository.saveAll(bookRecommendations);
     }
 

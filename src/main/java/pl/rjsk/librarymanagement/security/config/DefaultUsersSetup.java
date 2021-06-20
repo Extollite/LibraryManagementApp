@@ -31,7 +31,7 @@ public class DefaultUsersSetup implements CommandLineRunner {
             user.setLastName("Admin");
             String testPass = randomPasswordGeneratorService.generateSecureRandomPassword();
             log.info("Temp admin passwd: " + testPass);
-            user.setPassword(passwordEncoder.encode("admin"));
+            user.setPassword(passwordEncoder.encode(testPass));
             user.getRoles().add(UserRole.ADMIN);
             userRepository.save(user);
         }
@@ -44,7 +44,7 @@ public class DefaultUsersSetup implements CommandLineRunner {
             user.setLastName("User");
             String testPass = randomPasswordGeneratorService.generateSecureRandomPassword();
             log.info("Temp user passwd: " + testPass);
-            user.setPassword(passwordEncoder.encode("user1"));
+            user.setPassword(passwordEncoder.encode(testPass));
             user.getRoles().add(UserRole.USER);
             userRepository.save(user);
         }
